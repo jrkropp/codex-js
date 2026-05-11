@@ -20,12 +20,12 @@ This documentation describes the intended production design of `@jrkropp/codex-j
 
 ## Source References
 
-- Codex source reference: `/Users/justinkropp/Github/host-app/.reference/codex`
-- T3 source reference: `/Users/justinkropp/Github/host-app/.reference/t3code`
+- Codex source reference: `/Users/justinkropp/Github/host-app/external/codex`
+- T3 source reference: `/Users/justinkropp/Github/host-app/external/t3code`
 - Package Codex upstream source: `/Users/justinkropp/Github/host-app/packages/codex-js/src/upstream/codex-rs`
 - Package T3 upstream source: `/Users/justinkropp/Github/host-app/packages/codex-js/src/upstream/t3code`
 
-The `.reference` directories are read-only. Do not import from them, edit them, or treat them as package source.
+The `external/` directories are read-only. Do not import from them, edit them, or treat them as package source.
 
 ## Writing Style
 

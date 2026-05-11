@@ -41,12 +41,20 @@ export function Chat({ threadId }: { threadId: string }) {
 
 ```bash
 pnpm install
+pnpm external:sync --codex /path/to/codex --t3 /path/to/t3-chat
 pnpm typecheck
 pnpm test
 pnpm build
 pnpm publint
 pnpm pack:dry-run
+pnpm dev:minimal
 ```
+
+Upstream reference source should stay local and unchecked-in under
+`external/`. The recommended setup is to sync local Codex and T3 source
+trees into `external/codex` and `external/t3code` with
+`pnpm external:sync`, then keep all actual product code and ports inside the
+tracked `packages/codex-js/src` tree.
 
 ## Releases
 
