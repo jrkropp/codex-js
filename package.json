@@ -1,0 +1,35 @@
+{
+	"name": "codex-js-workspace",
+	"private": true,
+	"type": "module",
+	"packageManager": "pnpm@10.30.1",
+	"scripts": {
+		"build": "pnpm --filter @jrkropp/codex-js build",
+		"build:examples": "pnpm --filter @jrkropp/codex-js-minimal-app-server-example build && pnpm --filter @jrkropp/codex-js-vite-react-example build && pnpm --filter @jrkropp/codex-js-react-router-cloudflare-example build",
+		"changeset": "changeset",
+		"check": "pnpm typecheck && pnpm build && pnpm test && pnpm publint && pnpm pack:dry-run && pnpm build:examples",
+		"pack:dry-run": "pnpm --filter @jrkropp/codex-js pack:dry-run",
+		"publint": "pnpm --filter @jrkropp/codex-js publint",
+		"release": "pnpm check && changeset publish",
+		"test": "vitest run",
+		"typecheck": "pnpm -r --if-present typecheck",
+		"version-packages": "changeset version"
+	},
+	"devDependencies": {
+		"@changesets/changelog-github": "^0.5.1",
+		"@changesets/cli": "^2.29.7",
+		"@fontsource-variable/geist": "^5.2.8",
+		"@tailwindcss/vite": "^4.1.17",
+		"@types/node": "^24.10.1",
+		"@types/react": "19.2.7",
+		"@types/react-dom": "19.2.3",
+		"@types/ws": "^8.18.1",
+		"publint": "^0.3.18",
+		"tailwindcss": "^4.1.17",
+		"tsup": "^8.5.1",
+		"typescript": "5.8.3",
+		"vite": "^6.4.2",
+		"vitest": "^4.1.5",
+		"ws": "^8.18.3"
+	}
+}

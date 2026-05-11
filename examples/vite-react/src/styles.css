@@ -1,0 +1,39 @@
+@import "tailwindcss" source(".");
+@import "tw-animate-css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+@source "../../../packages/codex-js/src/components";
+@source "../../../packages/codex-js/src/hooks";
+@source "../../../packages/codex-js/src/shadcn";
+@source "../../../packages/codex-js/src/upstream/t3code";
+
+:root {
+	--background: oklch(0.976 0.003 240);
+	--foreground: oklch(0.18 0.012 235);
+	--card: oklch(0.998 0.001 240);
+	--card-foreground: var(--foreground);
+	--popover: oklch(0.998 0.001 240);
+	--popover-foreground: var(--foreground);
+	--primary: oklch(0.39 0.058 190);
+	--primary-foreground: oklch(0.99 0.006 170);
+	--secondary: oklch(0.946 0.004 245);
+	--secondary-foreground: oklch(0.22 0.014 235);
+	--muted: oklch(0.943 0.004 245);
+	--muted-foreground: oklch(0.46 0.011 235);
+	--accent: oklch(0.94 0.005 235);
+	--accent-foreground: oklch(0.22 0.014 235);
+	--destructive: oklch(0.59 0.185 28);
+	--border: oklch(0.858 0.006 240);
+	--input: oklch(0.858 0.006 240);
+	--ring: oklch(0.49 0.062 190);
+	--radius: 0.5rem;
+	font-family: "Geist Variable", Inter, ui-sans-serif, system-ui, sans-serif;
+	color-scheme: light;
+}
+
+body {
+	background: var(--background);
+	color: var(--foreground);
+	margin: 0;
+}

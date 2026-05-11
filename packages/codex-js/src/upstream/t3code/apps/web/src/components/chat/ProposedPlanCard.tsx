@@ -1,0 +1,94 @@
+import { EllipsisIcon } from "lucide-react";
+import { memo, useState } from "react";
+
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { cn } from "../../lib/utils";
+
+import ChatMarkdown from "../ChatMarkdown";
+import {
+	buildCollapsedProposedPlanPreviewMarkdown,
+	proposedPlanTitle,
+	stripDisplayedPlanMarkdown,
+} from "./proposed-plan";
+
+export const ProposedPlanCard = memo(function ProposedPlanCard({
+	planMarkdown,
+}: {
+	planMarkdown: string;
+}) {
+	const [expanded, setExpanded] = useState(false);
+	const [copied, setCopied] = useState(false);
+	const title = proposedPlanTitle(planMarkdown) ?? "Proposed plan";
+	const lineCount = planMarkdown.split("\n").length;
+	const canCollapse = planMarkdown.length > 900 || lineCount > 20;
+	const displayedPlanMarkdown = stripDisplayedPlanMarkdown(planMarkdown);
+	const collapsedPreview = canCollapse
+		? buildCollapsedProposedPlanPreviewMarkdown(planMarkdown, { maxLines: 10 })
+		: null;
+
+	function copyPlan() {
+		if (!navigator.clipboard?.writeText) {
+			return;
+		}
+		void navigator.clipboard.writeText(`${planMarkdown.trimEnd()}\n`).then(() => {
+			setCopied(true);
+			window.setTimeout(() => setCopied(false), 1200);
+		});
+	}
+
+	return (
+		<div className="rounded-[24px] border border-border/80 bg-card/70 p-4 sm:p-5">
+			<div className="flex flex-wrap items-center justify-between gap-3">
+				<div className="flex min-w-0 items-center gap-2">
+					<Badge variant="secondary">Plan</Badge>
+					<p className="truncate text-sm font-medium text-foreground">{title}</p>
+				</div>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button aria-label="Plan actions" size="icon-xs" variant="outline">
+							<EllipsisIcon aria-hidden="true" />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end" className="w-44">
+						<DropdownMenuItem onClick={copyPlan}>
+							{copied ? "Copied!" : "Copy to clipboard"}
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			</div>
+			<div className="mt-4">
+				<div className={cn("relative", canCollapse && !expanded && "max-h-104 overflow-hidden")}>
+					<ChatMarkdown
+						text={
+							canCollapse && !expanded
+								? (collapsedPreview ?? "")
+								: displayedPlanMarkdown
+						}
+						isStreaming={false}
+					/>
+					{canCollapse && !expanded ? (
+						<div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-card/95 via-card/80 to-transparent" />
+					) : null}
+				</div>
+				{canCollapse ? (
+					<div className="mt-4 flex justify-center">
+						<Button
+							size="sm"
+							variant="outline"
+							onClick={() => setExpanded((value) => !value)}
+						>
+							{expanded ? "Collapse plan" : "Expand plan"}
+						</Button>
+					</div>
+				) : null}
+			</div>
+		</div>
+	);
+});

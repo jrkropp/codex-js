@@ -1,0 +1,89 @@
+{
+	"name": "@jrkropp/codex-js",
+	"version": "0.1.0",
+	"description": "Unofficial TypeScript Codex runtime for building Codex-backed web apps.",
+	"license": "Apache-2.0",
+	"type": "module",
+	"sideEffects": [
+		"**/*.css"
+	],
+	"files": [
+		"dist",
+		"README.md",
+		"CHANGELOG.md",
+		"LICENSE",
+		"NOTICE"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./client": {
+			"types": "./dist/client/index.d.ts",
+			"import": "./dist/client/index.js"
+		},
+		"./server": {
+			"types": "./dist/server/index.d.ts",
+			"import": "./dist/server/index.js"
+		},
+		"./react": {
+			"types": "./dist/react/index.d.ts",
+			"import": "./dist/react/index.js"
+		},
+		"./shadcn": {
+			"types": "./dist/shadcn/index.d.ts",
+			"import": "./dist/shadcn/index.js"
+		},
+		"./testing": {
+			"types": "./dist/testing/index.d.ts",
+			"import": "./dist/testing/index.js"
+		},
+		"./styles.css": "./dist/styles.css"
+	},
+	"scripts": {
+		"build": "tsup && node scripts/copy-assets.mjs",
+		"clean": "rm -rf dist",
+		"codex:mirror": "node scripts/generate-codex-mirror.mjs",
+		"pack:dry-run": "npm pack --dry-run",
+		"publint": "publint",
+		"typecheck": "tsc -p tsconfig.json --pretty false"
+	},
+	"dependencies": {
+		"@legendapp/list": "^3.0.0-beta.44",
+		"@lexical/react": "^0.44.0",
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
+		"cmdk": "^1.1.1",
+		"lexical": "^0.44.0",
+		"lucide-react": "^1.11.0",
+		"radix-ui": "^1.4.3",
+		"react-markdown": "^10.1.0",
+		"remark-gfm": "^4.0.1",
+		"smol-toml": "^1.6.1",
+		"tailwind-merge": "^3.5.0",
+		"zustand": "^5.0.13"
+	},
+	"peerDependencies": {
+		"react": "^18.3.0 || ^19.0.0",
+		"react-dom": "^18.3.0 || ^19.0.0"
+	},
+	"devDependencies": {
+		"@types/react": "19.2.7",
+		"@types/react-dom": "19.2.3",
+		"typescript": "5.8.3"
+	},
+	"publishConfig": {
+		"access": "public",
+		"provenance": true
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/jrkropp/codex-js.git",
+		"directory": "packages/codex-js"
+	},
+	"bugs": {
+		"url": "https://github.com/jrkropp/codex-js/issues"
+	},
+	"homepage": "https://github.com/jrkropp/codex-js#readme"
+}

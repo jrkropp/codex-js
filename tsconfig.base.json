@@ -1,0 +1,29 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"useDefineForClassFields": true,
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"module": "ESNext",
+		"skipLibCheck": true,
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"isolatedModules": true,
+		"moduleDetection": "force",
+		"noEmit": true,
+		"jsx": "react-jsx",
+		"baseUrl": ".",
+		"paths": {
+			"@jrkropp/codex-js": ["packages/codex-js/src/index.ts"],
+			"@jrkropp/codex-js/client": ["packages/codex-js/src/client/index.ts"],
+			"@jrkropp/codex-js/react": ["packages/codex-js/src/react/index.ts"],
+			"@jrkropp/codex-js/server": ["packages/codex-js/src/server/index.ts"],
+			"@jrkropp/codex-js/shadcn": ["packages/codex-js/src/shadcn/index.ts"],
+			"@jrkropp/codex-js/testing": ["packages/codex-js/src/testing/index.ts"]
+		},
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedSideEffectImports": true
+	}
+}

@@ -1,0 +1,1 @@
+export { GetGoalHandler } from "../goal";

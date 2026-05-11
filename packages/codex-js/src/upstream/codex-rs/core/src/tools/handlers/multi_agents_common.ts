@@ -1,0 +1,3 @@
+export const MIN_WAIT_TIMEOUT_MS = 1_000;
+export const DEFAULT_WAIT_TIMEOUT_MS = 30_000;
+export const MAX_WAIT_TIMEOUT_MS = 3_600_000;

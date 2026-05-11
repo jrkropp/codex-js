@@ -1,0 +1,24 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"tsBuildInfoFile": "../../node_modules/.tmp/tsconfig.codex-js.tsbuildinfo"
+	},
+	"include": [
+		"src/client/**/*.ts",
+		"src/server/**/*.ts",
+		"src/react/**/*.ts",
+		"src/testing/**/*.ts",
+		"src/runtime/**/*.ts",
+		"src/components/**/*.ts",
+		"src/components/**/*.tsx",
+		"src/hooks/**/*.ts",
+		"src/hooks/**/*.tsx",
+		"src/shadcn/**/*.ts",
+		"src/shadcn/**/*.tsx",
+		"src/upstream/codex-rs/**/*.ts",
+		"src/upstream/t3code/**/*.ts",
+		"src/upstream/t3code/**/*.tsx",
+		"src/index.ts",
+		"tsup.config.ts"
+	]
+}

@@ -1,0 +1,389 @@
+@import "tailwindcss" source(".");
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+@source "../../../packages/codex-js/src/components";
+@source "../../../packages/codex-js/src/hooks";
+@source "../../../packages/codex-js/src/shadcn";
+@source "../../../packages/codex-js/src/upstream/t3code";
+
+:root {
+	--background: oklch(0.976 0.003 240);
+	--foreground: oklch(0.18 0.012 235);
+	--card: oklch(0.998 0.001 240);
+	--card-foreground: var(--foreground);
+	--popover: oklch(0.998 0.001 240);
+	--popover-foreground: var(--foreground);
+	--primary: oklch(0.39 0.058 190);
+	--primary-foreground: oklch(0.99 0.006 170);
+	--secondary: oklch(0.946 0.004 245);
+	--secondary-foreground: oklch(0.22 0.014 235);
+	--muted: oklch(0.943 0.004 245);
+	--muted-foreground: oklch(0.46 0.011 235);
+	--accent: oklch(0.94 0.005 235);
+	--accent-foreground: oklch(0.22 0.014 235);
+	--destructive: oklch(0.59 0.185 28);
+	--border: oklch(0.858 0.006 240);
+	--input: oklch(0.858 0.006 240);
+	--ring: oklch(0.49 0.062 190);
+	--radius: 0.5rem;
+	color-scheme: light;
+}
+
+@theme {
+	--font-sans:
+		"Geist Variable", Inter, ui-sans-serif, system-ui, sans-serif,
+		"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+}
+
+@layer base {
+	* {
+		border-color: var(--border);
+	}
+}
+
+html,
+body,
+#root {
+	height: 100%;
+	margin: 0;
+}
+
+body {
+	background:
+		linear-gradient(180deg, oklch(0.992 0.001 240), oklch(0.955 0.004 245)),
+		oklch(0.976 0.003 240);
+	color: var(--foreground);
+	font-family: var(--font-sans);
+}
+
+.app-shell {
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	height: 100%;
+	min-width: 0;
+}
+
+.app-header {
+	align-items: center;
+	background: color-mix(in oklch, var(--background) 82%, white);
+	border-bottom: 1px solid color-mix(in oklch, var(--border) 72%, transparent);
+	display: flex;
+	gap: 16px;
+	justify-content: space-between;
+	padding: 14px 24px;
+}
+
+.header-actions {
+	align-items: center;
+	display: flex;
+	gap: 10px;
+}
+
+.app-header h1 {
+	font-size: 16px;
+	font-weight: 650;
+	line-height: 1.3;
+	margin: 0;
+}
+
+.app-header p {
+	color: var(--muted-foreground);
+	font-size: 13px;
+	margin: 4px 0 0;
+}
+
+.app-badge {
+	align-items: center;
+	background: color-mix(in oklch, var(--primary) 9%, white);
+	border: 1px solid color-mix(in oklch, var(--primary) 22%, transparent);
+	border-radius: 999px;
+	color: var(--primary);
+	display: inline-flex;
+	font-size: 12px;
+	font-weight: 600;
+	gap: 6px;
+	height: 28px;
+	padding: 0 12px;
+	white-space: nowrap;
+}
+
+.ghost-button,
+.primary-button {
+	border: 0;
+	border-radius: 999px;
+	cursor: pointer;
+	font: inherit;
+	font-size: 13px;
+	font-weight: 650;
+	height: 34px;
+	padding: 0 14px;
+}
+
+.ghost-button {
+	background: transparent;
+	color: var(--muted-foreground);
+}
+
+.ghost-button:hover {
+	background: var(--accent);
+	color: var(--foreground);
+}
+
+.primary-button {
+	background: var(--primary);
+	color: var(--primary-foreground);
+}
+
+.primary-button:disabled {
+	cursor: not-allowed;
+	opacity: 0.45;
+}
+
+.chat-frame {
+	display: grid;
+	min-height: 0;
+	padding: 16px;
+}
+
+.chat-surface {
+	background: var(--background);
+	border: 1px solid color-mix(in oklch, var(--border) 78%, transparent);
+	border-radius: 18px;
+	box-shadow:
+		0 24px 60px oklch(0.2 0.012 235 / 0.08),
+		0 2px 8px oklch(0.2 0.012 235 / 0.045);
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	min-height: 0;
+	overflow: hidden;
+}
+
+.chat-surface > :not(.prompt-row) {
+	min-height: 0;
+}
+
+.prompt-row {
+	align-items: center;
+	background: color-mix(in oklch, var(--background) 92%, white);
+	border-bottom: 1px solid color-mix(in oklch, var(--border) 76%, transparent);
+	display: flex;
+	gap: 8px;
+	overflow-x: auto;
+	padding: 10px 12px;
+}
+
+.prompt-chip {
+	background: color-mix(in oklch, var(--accent) 82%, white);
+	border: 1px solid color-mix(in oklch, var(--border) 78%, transparent);
+	border-radius: 999px;
+	color: var(--foreground);
+	cursor: pointer;
+	flex: 0 0 auto;
+	font: inherit;
+	font-size: 12px;
+	font-weight: 600;
+	height: 30px;
+	padding: 0 12px;
+	white-space: nowrap;
+}
+
+.prompt-chip:hover {
+	border-color: color-mix(in oklch, var(--primary) 34%, var(--border));
+	color: var(--primary);
+}
+
+.tool-panel {
+	display: grid;
+	gap: 14px;
+	line-height: 1.45;
+}
+
+.tool-panel-kicker {
+	color: var(--primary);
+	font-size: 11px;
+	font-weight: 750;
+	letter-spacing: 0.06em;
+	margin: 0 0 4px;
+	text-transform: uppercase;
+}
+
+.tool-panel h3 {
+	font-size: 16px;
+	margin: 0;
+}
+
+.tool-panel p {
+	color: var(--muted-foreground);
+	font-size: 13px;
+	margin: 6px 0 0;
+}
+
+.tool-panel code {
+	background: color-mix(in oklch, var(--accent) 72%, white);
+	border-radius: 4px;
+	color: var(--foreground);
+	font-size: 12px;
+	padding: 1px 4px;
+}
+
+.tool-panel dl {
+	display: grid;
+	gap: 8px;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	margin: 0;
+}
+
+.tool-panel dl > div {
+	background: color-mix(in oklch, var(--background) 88%, white);
+	border: 1px solid color-mix(in oklch, var(--border) 76%, transparent);
+	border-radius: 8px;
+	padding: 10px;
+}
+
+.tool-panel dt {
+	color: var(--muted-foreground);
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
+.tool-panel dd {
+	font-size: 13px;
+	font-weight: 650;
+	margin: 3px 0 0;
+}
+
+.tool-panel-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	justify-content: flex-end;
+}
+
+.setup-frame {
+	align-items: center;
+	display: grid;
+	justify-items: center;
+	min-height: 0;
+	padding: 24px;
+}
+
+.setup-panel {
+	background: color-mix(in oklch, var(--background) 86%, white);
+	border: 1px solid color-mix(in oklch, var(--border) 82%, transparent);
+	border-radius: 18px;
+	box-shadow:
+		0 24px 60px oklch(0.2 0.012 235 / 0.08),
+		0 2px 8px oklch(0.2 0.012 235 / 0.045);
+	display: grid;
+	gap: 18px;
+	max-width: 520px;
+	padding: 28px;
+	width: min(100%, 520px);
+}
+
+.setup-kicker {
+	color: var(--primary);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	margin: 0 0 8px;
+	text-transform: uppercase;
+}
+
+.setup-panel h2 {
+	font-size: 24px;
+	line-height: 1.2;
+	margin: 0;
+}
+
+.setup-panel p:not(.setup-kicker) {
+	color: var(--muted-foreground);
+	font-size: 14px;
+	line-height: 1.55;
+	margin: 10px 0 0;
+}
+
+.field {
+	display: grid;
+	gap: 8px;
+}
+
+.field span {
+	color: var(--foreground);
+	font-size: 13px;
+	font-weight: 650;
+}
+
+.field input {
+	background: var(--background);
+	border: 1px solid var(--input);
+	border-radius: 10px;
+	color: var(--foreground);
+	font: inherit;
+	font-size: 14px;
+	height: 42px;
+	outline: none;
+	padding: 0 12px;
+}
+
+.field input:focus {
+	border-color: var(--ring);
+	box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 18%, transparent);
+}
+
+@media (max-width: 760px) {
+	.app-header {
+		align-items: flex-start;
+		flex-direction: column;
+		gap: 10px;
+		padding: 14px 16px;
+	}
+
+	.header-actions {
+		flex-wrap: wrap;
+	}
+
+	.chat-frame {
+		padding: 0;
+	}
+
+	.chat-surface {
+		border-left: 0;
+		border-radius: 0;
+		border-right: 0;
+		box-shadow: none;
+	}
+
+	.setup-frame {
+		align-items: stretch;
+		padding: 16px;
+	}
+
+	.setup-panel {
+		border-radius: 14px;
+		padding: 20px;
+		width: auto;
+	}
+}

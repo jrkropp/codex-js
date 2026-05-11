@@ -1,0 +1,1 @@
+export { UpdateGoalHandler } from "../goal";
