@@ -1,5 +1,5 @@
 # @jrkropp/codex-js
 
-## 0.1.0
+## 0.1.1
 
-Initial public extraction of the unofficial TypeScript Codex runtime.
+Initial visible public extraction of the unofficial TypeScript Codex runtime.

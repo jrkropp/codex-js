@@ -19,7 +19,7 @@ describe("codex-js package boundary", () => {
 		};
 
 		expect(packageJson.name).toBe("@jrkropp/codex-js");
-		expect(packageJson.version).toBe("0.1.0");
+		expect(packageJson.version).toBe("0.1.1");
 		expect(packageJson.private).toBeUndefined();
 		expect(packageJson.files).toEqual([
 			"dist",
