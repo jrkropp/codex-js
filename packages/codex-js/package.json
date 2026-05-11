@@ -1,6 +1,6 @@
 {
 	"name": "@jrkropp/codex-js",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"description": "Unofficial TypeScript Codex runtime for building Codex-backed web apps.",
 	"license": "Apache-2.0",
 	"type": "module",
@@ -38,6 +38,70 @@
 		"./testing": {
 			"types": "./dist/testing/index.d.ts",
 			"import": "./dist/testing/index.js"
+		},
+		"./codex-rs/config": {
+			"types": "./dist/codex-rs/config/index.d.ts",
+			"import": "./dist/codex-rs/config/index.js"
+		},
+		"./codex-rs/parity": {
+			"types": "./dist/codex-rs/parity.d.ts",
+			"import": "./dist/codex-rs/parity.js"
+		},
+		"./codex-rs/unsupported": {
+			"types": "./dist/codex-rs/unsupported.d.ts",
+			"import": "./dist/codex-rs/unsupported.js"
+		},
+		"./codex-rs/core": {
+			"types": "./dist/codex-rs/core/index.d.ts",
+			"import": "./dist/codex-rs/core/index.js"
+		},
+		"./codex-rs/core/config": {
+			"types": "./dist/codex-rs/core/config/index.d.ts",
+			"import": "./dist/codex-rs/core/config/index.js"
+		},
+		"./codex-rs/thread-store": {
+			"types": "./dist/codex-rs/thread-store/index.d.ts",
+			"import": "./dist/codex-rs/thread-store/index.js"
+		},
+		"./codex-rs/codex-api": {
+			"types": "./dist/codex-rs/codex-api/index.d.ts",
+			"import": "./dist/codex-rs/codex-api/index.js"
+		},
+		"./codex-rs/app-server": {
+			"types": "./dist/codex-rs/app-server/index.d.ts",
+			"import": "./dist/codex-rs/app-server/index.js"
+		},
+		"./codex-rs/app-server-protocol": {
+			"types": "./dist/codex-rs/app-server-protocol/index.d.ts",
+			"import": "./dist/codex-rs/app-server-protocol/index.js"
+		},
+		"./codex-rs/app-server-protocol/protocol": {
+			"types": "./dist/codex-rs/app-server-protocol/protocol.d.ts",
+			"import": "./dist/codex-rs/app-server-protocol/protocol.js"
+		},
+		"./codex-rs/model-provider": {
+			"types": "./dist/codex-rs/model-provider/index.d.ts",
+			"import": "./dist/codex-rs/model-provider/index.js"
+		},
+		"./codex-rs/models-manager": {
+			"types": "./dist/codex-rs/models-manager/index.d.ts",
+			"import": "./dist/codex-rs/models-manager/index.js"
+		},
+		"./codex-rs/utils/output-truncation": {
+			"types": "./dist/codex-rs/utils/output-truncation.d.ts",
+			"import": "./dist/codex-rs/utils/output-truncation.js"
+		},
+		"./codex-rs/utils/string": {
+			"types": "./dist/codex-rs/utils/string.d.ts",
+			"import": "./dist/codex-rs/utils/string.js"
+		},
+		"./t3code/apps/web": {
+			"types": "./dist/t3code/apps/web/index.d.ts",
+			"import": "./dist/t3code/apps/web/index.js"
+		},
+		"./t3code/apps/web/components/chat": {
+			"types": "./dist/t3code/apps/web/components/chat.d.ts",
+			"import": "./dist/t3code/apps/web/components/chat.js"
 		},
 		"./styles.css": "./dist/styles.css"
 	},

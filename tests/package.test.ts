@@ -19,7 +19,7 @@ describe("codex-js package boundary", () => {
 		};
 
 		expect(packageJson.name).toBe("@jrkropp/codex-js");
-		expect(packageJson.version).toBe("0.1.2");
+		expect(packageJson.version).toBe("0.1.3");
 		expect(packageJson.private).toBeUndefined();
 		expect(packageJson.files).toEqual([
 			"dist",
@@ -50,13 +50,35 @@ describe("codex-js package boundary", () => {
 				import: "./dist/testing/index.js",
 				types: "./dist/testing/index.d.ts",
 			},
+			"./codex-rs/config": {
+				import: "./dist/codex-rs/config/index.js",
+				types: "./dist/codex-rs/config/index.d.ts",
+			},
+			"./codex-rs/core": {
+				import: "./dist/codex-rs/core/index.js",
+				types: "./dist/codex-rs/core/index.d.ts",
+			},
+			"./codex-rs/codex-api": {
+				import: "./dist/codex-rs/codex-api/index.js",
+				types: "./dist/codex-rs/codex-api/index.d.ts",
+			},
+			"./codex-rs/app-server": {
+				import: "./dist/codex-rs/app-server/index.js",
+				types: "./dist/codex-rs/app-server/index.d.ts",
+			},
+			"./codex-rs/app-server-protocol/protocol": {
+				import: "./dist/codex-rs/app-server-protocol/protocol.js",
+				types: "./dist/codex-rs/app-server-protocol/protocol.d.ts",
+			},
+			"./t3code/apps/web": {
+				import: "./dist/t3code/apps/web/index.js",
+				types: "./dist/t3code/apps/web/index.d.ts",
+			},
 			"./styles.css": "./dist/styles.css",
 		});
 		expect(packageJson.exports).not.toHaveProperty("./runtime");
 		expect(packageJson.exports).not.toHaveProperty("./components");
 		expect(packageJson.exports).not.toHaveProperty("./hooks");
-		expect(packageJson.exports).not.toHaveProperty("./codex-rs/core");
-		expect(packageJson.exports).not.toHaveProperty("./t3code/apps/web");
 		expect(JSON.stringify(packageJson.exports)).not.toContain("./src/");
 	});
 

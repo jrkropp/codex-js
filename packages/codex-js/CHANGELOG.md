@@ -1,5 +1,9 @@
 # @jrkropp/codex-js
 
+## 0.1.3
+
+Expose deliberate low-level Codex and T3 mirror subpaths so host adapters can migrate off the vendored workspace package.
+
 ## 0.1.2
 
 Expose the complete Codex runtime surface from the public server subpath for host adapters.
