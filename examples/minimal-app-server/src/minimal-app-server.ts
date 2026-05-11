@@ -33,8 +33,16 @@ export type MinimalCodexAppServerOptions = {
 };
 
 export type MinimalCodexAppServer = {
+	createProcessor(input?: {
+		connectionId?: number;
+	}): CodexAppServerMessageProcessor<MinimalCodexAppServerContext>;
 	eventsForThread(threadId: string): readonly AppServerEvent[];
 	handle(
+		request: ClientRequest,
+		context?: MinimalCodexAppServerContext,
+	): Promise<unknown>;
+	handleWithProcessor(
+		processor: CodexAppServerMessageProcessor<MinimalCodexAppServerContext>,
 		request: ClientRequest,
 		context?: MinimalCodexAppServerContext,
 	): Promise<unknown>;
@@ -133,10 +141,19 @@ export function createMinimalCodexAppServer(
 	const processor = runtime.createMessageProcessor({ connectionId: 0 });
 
 	return {
+		createProcessor(input = {}) {
+			return runtime.createMessageProcessor({
+				connectionId:
+					input.connectionId ?? Math.floor(Math.random() * Number.MAX_SAFE_INTEGER),
+			});
+		},
 		eventsForThread(threadId) {
 			return eventLog.get(threadId) ?? [];
 		},
 		handle(request, context) {
+			return processor.processClientRequest(request, context);
+		},
+		handleWithProcessor(processor, request, context) {
 			return processor.processClientRequest(request, context);
 		},
 		processor,

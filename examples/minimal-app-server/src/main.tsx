@@ -210,6 +210,7 @@ function MinimalApp() {
 							placeholder="Ask Codex anything..."
 							showInteractionModeToggle
 							onInteractionModeChange={setInteractionMode}
+							buildThreadStartParams={({ threadId }) => ({ threadId })}
 							buildTurnStartParams={(input) => ({
 								...createDefaultTurnStartParams(input),
 								model,

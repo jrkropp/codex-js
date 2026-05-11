@@ -62,6 +62,7 @@ export default defineConfig({
 					void appServer().then((minimalAppServer) => {
 						wsServer.handleUpgrade(request, socket as Socket, head, (webSocket) => {
 							const codexSocket = webSocket as unknown as MinimalWebSocket;
+							const processor = minimalAppServer.createProcessor();
 							const pendingServerRequestThreads = new Map<string | number, string>();
 							const subscriptions = new Map<string, () => void>();
 							const subscribeThread = (threadId: string) => {
@@ -136,7 +137,9 @@ export default defineConfig({
 									subscribeThread(threadId);
 								}
 								void minimalAppServer
-									.handle(parsed as never, { apiKey: ticketRecord.apiKey })
+									.handleWithProcessor(processor, parsed as never, {
+										apiKey: ticketRecord.apiKey,
+									})
 									.then((result) => {
 										const responseThreadId = threadIdFromResponse(result);
 										if (responseThreadId) {
@@ -154,6 +157,7 @@ export default defineConfig({
 								for (const unsubscribe of subscriptions.values()) {
 									unsubscribe();
 								}
+								void processor.connectionClosed();
 							});
 						});
 					});
