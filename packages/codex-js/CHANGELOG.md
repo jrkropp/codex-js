@@ -1,5 +1,9 @@
 # @jrkropp/codex-js
 
+## 0.1.4
+
+Expose the full React chat lifecycle helper surface from the public React subpath.
+
 ## 0.1.3
 
 Expose deliberate low-level Codex and T3 mirror subpaths so host adapters can migrate off the vendored workspace package.
