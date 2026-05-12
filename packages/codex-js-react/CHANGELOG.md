@@ -1,5 +1,17 @@
 # @jrkropp/codex-js-react
 
+## 0.3.0
+
+### Minor Changes
+
+- Update the React package docs and examples around the split package model,
+  generated stylesheet import, and Cloudflare example integration path.
+
+### Patch Changes
+
+- Updated dependencies:
+  - @jrkropp/codex-js@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes

@@ -1,0 +1,23 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "codex-js-cloudflare-example-test",
+	"main": "./src/worker/index.ts",
+	"compatibility_date": "2026-05-12",
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "CODEX_SESSIONS",
+				"class_name": "CodexSessionObject",
+			},
+		],
+	},
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_sqlite_classes": ["CodexSessionObject"],
+		},
+	],
+	"vars": {
+		"OPENAI_BASE_URL": "https://api.openai.com/v1",
+	},
+}

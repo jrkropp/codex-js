@@ -404,20 +404,26 @@ function writeServerConsumer(directory: string, coreTarballPath: string): void {
 	writeFileSync(
 		join(directory, "index.ts"),
 		[
-			'import { InMemoryThreadStore, serializeJsonRpcResponse } from "@jrkropp/codex-js/server";',
-			'import type { ThreadStore } from "@jrkropp/codex-js/server";',
+			'import { InMemoryThreadStore, createCodexAppServer, defineDynamicTool, dynamicToolResponse, serializeJsonRpcResponse } from "@jrkropp/codex-js/server";',
+			'import type { PendingServerRequestStore, ThreadStore } from "@jrkropp/codex-js/server";',
 			"const store: ThreadStore = new InMemoryThreadStore();",
+			"const pending: PendingServerRequestStore = { delete() {}, get() { return null; }, list() { return []; }, put() {}, take() { return null; } };",
+			"const tool = defineDynamicTool({ name: 'ping', description: 'Ping.', inputSchema: { type: 'object' }, execute() { return dynamicToolResponse.text('pong'); } });",
+			"const appServer = createCodexAppServer({ threadStore: store, pendingServerRequests: pending, dynamicTools: [tool], createModelClient() { throw new Error('not used'); } });",
 			"serializeJsonRpcResponse(1, { ok: true });",
-			"void store;",
+			"void appServer;",
 		].join("\n"),
 	);
 	writeFileSync(
 		join(directory, "index.mjs"),
 		[
-			'import { InMemoryThreadStore, serializeJsonRpcResponse } from "@jrkropp/codex-js/server";',
+			'import { InMemoryThreadStore, createCodexAppServer, defineDynamicTool, dynamicToolResponse, serializeJsonRpcResponse } from "@jrkropp/codex-js/server";',
 			"const store = new InMemoryThreadStore();",
+			"const tool = defineDynamicTool({ name: 'ping', description: 'Ping.', inputSchema: { type: 'object' }, execute() { return dynamicToolResponse.text('pong'); } });",
+			"const appServer = createCodexAppServer({ threadStore: store, dynamicTools: [tool], createModelClient() { throw new Error('not used'); } });",
 			"if (typeof serializeJsonRpcResponse(1, {}) !== 'string') throw new Error('bad transport export');",
 			"if (!store) throw new Error('bad store export');",
+			"if (!appServer.pendingServerRequests) throw new Error('bad app-server export');",
 		].join("\n"),
 	);
 }

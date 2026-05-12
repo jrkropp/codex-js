@@ -4,7 +4,10 @@ Status: accepted
 
 ## Context
 
-`@jrkropp/codex-js` exposes a public package surface on top of two upstream source trees: Codex for runtime semantics and T3 for chat interaction ownership. The public contract must stay small enough to understand quickly while remaining faithful to those source systems.
+`@jrkropp/codex-js` exposes a public package surface for Codex runtime semantics.
+`@jrkropp/codex-js-react` exposes the React presentation surface. The public
+contract must stay small enough to understand quickly while remaining faithful
+to Codex terminology.
 
 The package surface contains ergonomic concepts only where they clarify usage without creating a second runtime model. The pressure test compares the public surface against Codex primitives, T3 lifecycle ownership, and common consuming application shapes.
 
@@ -37,49 +40,52 @@ T3 terms define the React chat lifecycle boundary. Optimistic rows, local dispat
 
 The canonical public import paths are:
 
+- `@jrkropp/codex-js`
+- `@jrkropp/codex-js/client`
 - `@jrkropp/codex-js/server`
-- `@jrkropp/codex-js/react`
-- `@jrkropp/codex-js/react`
+- `@jrkropp/codex-js/testing`
+- `@jrkropp/codex-js-react`
+- `@jrkropp/codex-js-react/shadcn`
+- `@jrkropp/codex-js-react/styles.css`
 
-The package root is a small plug-and-play chat entrypoint. It does not flatten
-runtime, hook, component, Codex mirror, or T3 mirror exports into one namespace.
-
-The Codex and T3 upstream source import paths remain available for advanced use, but app-facing code should prefer the canonical package surfaces.
+The package roots are small. They do not flatten runtime, hook, component, or
+reference-source exports into one namespace. Reference-source paths are not
+public imports.
 
 ## Public Surface Classification
 
-| Concept | Classification | Decision |
-| --- | --- | --- |
-| `ThreadStore` | Codex-native | Use the Codex-shaped store contract as the storage boundary. |
-| `ThreadReader` | Codex store read view | Use for store-only and headless hydration when hooks need only `readThread` and `loadHistory`. |
-| `LiveThread` | Codex-native | Use for live thread lifecycle and store-backed thread operations. |
-| `ClientRequest` | Codex app-server protocol | Use for typed client-to-server app-server method calls. |
-| `ServerNotification` | Codex app-server protocol | Use for typed server-to-client notification flow. |
-| `ServerRequest` | Codex app-server protocol | Use for server-to-client requests that require request-id resolution. |
-| `RequestId` | Codex app-server protocol | Use to resolve or reject server requests. |
-| `AppServerSession` | Codex app-server client helper | Own request-id lifecycle and typed lifecycle helpers over generated `ClientRequest` values. |
-| `PendingAppServerRequests` | Codex app-server request state | Own pending UI state keyed by `RequestId`. |
-| `ThreadEventStore` | Codex app-server protocol state | Own generated `Thread`, `Turn`, `ThreadItem`, pending server request, warning, error, active-turn, and connection state for chat UI. |
-| `ThreadEventSnapshot` | Codex app-server protocol state | Expose immutable protocol-native state to hooks and components. |
-| `Submission` | Codex-native | Use inside Codex runtime/session internals, not as the public UI response contract. |
-| `Event` and `EventMsg` | Codex-native | Use for core runtime event flow inside runtime and storage internals. |
-| `ThreadHistoryBuilder` | Codex-native | Use for low-level history projection. |
-| `RenderedThreadState` | Codex-native projection | Keep as a low-level core projection, not the primary app-facing chat state. |
-| `CodexChatRuntimeOptions` | Component ergonomic facade | Configure an app-server-backed chat runtime with optional thread and optional store reader fallback. |
-| `CodexAppServer` | Codex app-server boundary | Shape around Codex generated `ClientRequest`, `ServerNotification`, `ServerRequest`, `RequestId`, event streaming, and request-id resolution; hide route, credential, WebSocket, and platform details in the host adapter. |
-| Component and hook props | React ergonomics | Keep package-name-neutral and store-centered. |
-| Draft helpers | T3 lifecycle/app routing | Keep in `hooks` or host-app glue unless they operate only on Codex data. |
-| Local dispatch helpers | T3 lifecycle | Keep with chat lifecycle code, close to `ChatView` and composer ownership. |
+| Concept                    | Classification                  | Decision                                                                                                                                                                                                                   |
+| -------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ThreadStore`              | Codex-native                    | Use the Codex-shaped store contract as the storage boundary.                                                                                                                                                               |
+| `ThreadReader`             | Codex store read view           | Use for store-only and headless hydration when hooks need only `readThread` and `loadHistory`.                                                                                                                             |
+| `LiveThread`               | Codex-native                    | Use for live thread lifecycle and store-backed thread operations.                                                                                                                                                          |
+| `ClientRequest`            | Codex app-server protocol       | Use for typed client-to-server app-server method calls.                                                                                                                                                                    |
+| `ServerNotification`       | Codex app-server protocol       | Use for typed server-to-client notification flow.                                                                                                                                                                          |
+| `ServerRequest`            | Codex app-server protocol       | Use for server-to-client requests that require request-id resolution.                                                                                                                                                      |
+| `RequestId`                | Codex app-server protocol       | Use to resolve or reject server requests.                                                                                                                                                                                  |
+| `AppServerSession`         | Codex app-server client helper  | Own request-id lifecycle and typed lifecycle helpers over generated `ClientRequest` values.                                                                                                                                |
+| `PendingAppServerRequests` | Codex app-server request state  | Own pending UI state keyed by `RequestId`.                                                                                                                                                                                 |
+| `ThreadEventStore`         | Codex app-server protocol state | Own generated `Thread`, `Turn`, `ThreadItem`, pending server request, warning, error, active-turn, and connection state for chat UI.                                                                                       |
+| `ThreadEventSnapshot`      | Codex app-server protocol state | Expose immutable protocol-native state to hooks and components.                                                                                                                                                            |
+| `Submission`               | Codex-native                    | Use inside Codex runtime/session internals, not as the public UI response contract.                                                                                                                                        |
+| `Event` and `EventMsg`     | Codex-native                    | Use for core runtime event flow inside runtime and storage internals.                                                                                                                                                      |
+| `ThreadHistoryBuilder`     | Codex-native                    | Use for low-level history projection.                                                                                                                                                                                      |
+| `RenderedThreadState`      | Codex-native projection         | Keep as a low-level core projection, not the primary app-facing chat state.                                                                                                                                                |
+| `CodexChatRuntimeOptions`  | Component ergonomic facade      | Configure an app-server-backed chat runtime with optional thread and optional store reader fallback.                                                                                                                       |
+| `CodexAppServer`           | Codex app-server boundary       | Shape around Codex generated `ClientRequest`, `ServerNotification`, `ServerRequest`, `RequestId`, event streaming, and request-id resolution; hide route, credential, WebSocket, and platform details in the host adapter. |
+| Component and hook props   | React ergonomics                | Keep package-name-neutral and store-centered.                                                                                                                                                                              |
+| Draft helpers              | T3 lifecycle/app routing        | Keep in `hooks` or host-app glue unless they operate only on Codex data.                                                                                                                                                   |
+| Local dispatch helpers     | T3 lifecycle                    | Keep with chat lifecycle code, close to `ChatView` and composer ownership.                                                                                                                                                 |
 
 ## Pressure Test Findings
 
-| Scenario | Required package concepts | Host-owned concepts | Result |
-| --- | --- | --- | --- |
-| Local file-backed app | `ThreadStore`, `LiveThread`, `Submission`, `ThreadEventStore`, hooks or components | Local file paths, user identity, persistence location | Passes when the store is configured before entering runtime. |
-| Cloudflare Durable Object app | Same runtime concepts plus an app-server implementation | Durable Object naming, bindings, auth, routing, deployment | Passes when Durable Object placement is hidden behind store and app-server boundaries. |
-| Custom product app | Runtime plus renderer/tool/prompt extension points | Product prompts, tools, auth, renderers, route paths | Passes when extensions enter through composition rather than package source edits. |
-| Headless app | `runtime` and `hooks` | Entire UI | Passes when hooks expose state/actions without requiring package components. |
-| Plug-and-play app | `components` with configured reader and app server | Store, reader, and app-server construction | Passes when the component API does not expose routes, Cloudflare, deployment placement, or T3 internals. |
+| Scenario                      | Required package concepts                                                          | Host-owned concepts                                        | Result                                                                                                   |
+| ----------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Local file-backed app         | `ThreadStore`, `LiveThread`, `Submission`, `ThreadEventStore`, hooks or components | Local file paths, user identity, persistence location      | Passes when the store is configured before entering runtime.                                             |
+| Cloudflare Durable Object app | Same runtime concepts plus an app-server implementation                            | Durable Object naming, bindings, auth, routing, deployment | Passes when Durable Object placement is hidden behind store and app-server boundaries.                   |
+| Custom product app            | Runtime plus renderer/tool/prompt extension points                                 | Product prompts, tools, auth, renderers, route paths       | Passes when extensions enter through composition rather than package source edits.                       |
+| Headless app                  | `runtime` and `hooks`                                                              | Entire UI                                                  | Passes when hooks expose state/actions without requiring package components.                             |
+| Plug-and-play app             | `components` with configured reader and app server                                 | Store, reader, and app-server construction                 | Passes when the component API does not expose routes, Cloudflare, deployment placement, or T3 internals. |
 
 ## Consequences
 

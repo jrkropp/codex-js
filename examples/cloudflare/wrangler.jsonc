@@ -1,0 +1,35 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "codex-js-cloudflare-example",
+	"main": "./src/worker/index.ts",
+	"compatibility_date": "2026-05-12",
+	"assets": {
+		"directory": "./dist",
+		"not_found_handling": "single-page-application",
+		"run_worker_first": ["/api/*"],
+	},
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "CODEX_SESSIONS",
+				"class_name": "CodexSessionObject",
+			},
+		],
+	},
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_sqlite_classes": ["CodexSessionObject"],
+		},
+	],
+	"observability": {
+		"enabled": true,
+		"head_sampling_rate": 1,
+	},
+	"secrets": {
+		"required": ["OPENAI_API_KEY"],
+	},
+	"vars": {
+		"OPENAI_BASE_URL": "https://api.openai.com/v1",
+	},
+}

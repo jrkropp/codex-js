@@ -1,6 +1,6 @@
 {
 	"name": "@jrkropp/codex-js-react",
-	"version": "0.2.1",
+	"version": "0.3.0",
 	"description": "React components and shadcn-compatible UI for codex-js.",
 	"license": "Apache-2.0",
 	"type": "module",
@@ -36,7 +36,7 @@
 		"typecheck": "tsc -p tsconfig.json --pretty false"
 	},
 	"dependencies": {
-		"@jrkropp/codex-js": "^0.2.0",
+		"@jrkropp/codex-js": "^0.3.0",
 		"@legendapp/list": "^3.0.0-beta.44",
 		"@lexical/react": "^0.44.0",
 		"class-variance-authority": "^0.7.1",

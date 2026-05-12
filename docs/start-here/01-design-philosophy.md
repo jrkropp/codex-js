@@ -12,15 +12,15 @@ This avoids a custom product-specific chat runtime. The package preserves Codex
 concepts for execution and persistence while using T3-shaped components for the
 browser chat experience.
 
-## Upstream First
+## Codex First
 
-The upstream source trees are the maintenance strategy. File names, folder
-boundaries, protocol names, and lifecycle concepts stay close to Codex and T3 so
-future source drops can be compared and ported directly.
+The Codex source tree is the maintenance strategy for runtime behavior. Protocol
+names and lifecycle concepts stay close to Codex so future source drops can be
+compared and ported directly.
 
-Package-owned abstractions live outside the upstream trees. If a behavior is
+Package-owned abstractions live outside reference material. If a behavior is
 product-specific, expose a contract, prop, renderer, tool, prompt, or adapter
-slot instead of editing upstream-shaped package code.
+slot instead of editing internal package code.
 
 ## Boundaries Over Abstractions
 
@@ -46,7 +46,7 @@ Host applications own the parts that make an assistant product-specific:
 - product actions, banners, mentions, and custom renderers
 
 Those choices enter through stable package contracts. They do not belong in
-`src/upstream/codex-rs`, `src/upstream/t3code`, or package runtime internals.
+reference material or package runtime internals.
 
 ## Current Truth
 

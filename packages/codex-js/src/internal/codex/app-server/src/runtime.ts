@@ -39,11 +39,11 @@ import { CodexSessionTaskRunner } from "./session_task_runner";
 import { ThreadStateManager } from "./thread_state";
 import { RequestSerializationQueues } from "./request_serialization";
 import {
-	apply_bespoke_event_handling,
+	mapCoreEventToAppServerEvents,
 	serverRequestResolvedNotification,
 	type AppServerProtocolEvent,
 	type ServerRequestCoreTarget,
-} from "./bespoke_event_handling";
+} from "./app_server_event_mapping";
 import type {
 	ThreadCompactStartParams,
 	McpServerOauthLoginParams,
@@ -72,16 +72,19 @@ export type CodexAppServerEventSink<Context = CodexAppServerRuntimeContext> = (
 	},
 ) => Promise<void> | void;
 
-export type CodexAppServerOutgoingSink<Context = CodexAppServerRuntimeContext> = (
-	message: OutgoingMessage,
-	context: {
-		connectionIds?: ConnectionId[];
-		context?: Context;
-		threadId?: ThreadId;
-	},
-) => Promise<void> | void;
+export type CodexAppServerOutgoingSink<Context = CodexAppServerRuntimeContext> =
+	(
+		message: OutgoingMessage,
+		context: {
+			connectionIds?: ConnectionId[];
+			context?: Context;
+			threadId?: ThreadId;
+		},
+	) => Promise<void> | void;
 
-export type CodexAppServerRuntimeOptions<Context = CodexAppServerRuntimeContext> = {
+export type CodexAppServerRuntimeOptions<
+	Context = CodexAppServerRuntimeContext,
+> = {
 	buildCreateThreadParams?: (input: {
 		context?: Context;
 		params: ThreadStartParams;
@@ -89,7 +92,11 @@ export type CodexAppServerRuntimeOptions<Context = CodexAppServerRuntimeContext>
 	}) => CreateThreadParams | Promise<CreateThreadParams>;
 	buildSessionConfiguration?: (input: {
 		context?: Context;
-		params: ThreadStartParams | ThreadResumeParams | TurnStartParams | ThreadCompactStartParams;
+		params:
+			| ThreadStartParams
+			| ThreadResumeParams
+			| TurnStartParams
+			| ThreadCompactStartParams;
 		thread: Awaited<ReturnType<ThreadStore["readThread"]>>;
 	}) => Partial<SessionConfiguration> | Promise<Partial<SessionConfiguration>>;
 	createModelClient: (input: {
@@ -111,14 +118,27 @@ export type CodexAppServerRuntimeOptions<Context = CodexAppServerRuntimeContext>
 	createSession?: (input: {
 		context?: Context;
 		eventSink: (event: Event) => void;
-		params: ThreadStartParams | ThreadResumeParams | TurnStartParams | ThreadCompactStartParams;
+		params:
+			| ThreadStartParams
+			| ThreadResumeParams
+			| TurnStartParams
+			| ThreadCompactStartParams;
 		submission?: Submission;
 		threadId: ThreadId;
 	}) => Session | Promise<Session>;
 	eventSink?: CodexAppServerEventSink<Context>;
-	onRuntimeError?: (error: unknown, context: { context?: Context; threadId?: ThreadId }) => void;
-	runInBackground?: (promise: Promise<unknown>, context: { context?: Context; threadId: ThreadId }) => void;
-	runConnectionBackground?: (promise: Promise<unknown>, context: { context?: Context }) => void;
+	onRuntimeError?: (
+		error: unknown,
+		context: { context?: Context; threadId?: ThreadId },
+	) => void;
+	runInBackground?: (
+		promise: Promise<unknown>,
+		context: { context?: Context; threadId: ThreadId },
+	) => void;
+	runConnectionBackground?: (
+		promise: Promise<unknown>,
+		context: { context?: Context },
+	) => void;
 	sendOutgoingMessage?: CodexAppServerEventSink<Context>;
 	sendOutgoingTransportMessage?: CodexAppServerOutgoingSink<Context>;
 	resolveDynamicTools?: (input: {
@@ -144,16 +164,26 @@ export type CodexAppServerRuntime<Context = CodexAppServerRuntimeContext> = {
 	}): CodexAppServerMessageProcessor<Context>;
 	methodHandlers: CodexAppServerMethodHandlers<Context>;
 	rejectServerRequest(
-		params: { error: JSONRPCErrorError; requestId: string | number; threadId: ThreadId | string },
+		params: {
+			error: JSONRPCErrorError;
+			requestId: string | number;
+			threadId: ThreadId | string;
+		},
 		context?: Context,
 	): Promise<void>;
 	resolveServerRequest(
-		params: { requestId: string | number; result: Result; threadId: ThreadId | string },
+		params: {
+			requestId: string | number;
+			result: Result;
+			threadId: ThreadId | string;
+		},
 		context?: Context,
 	): Promise<void>;
 };
 
-export function createCodexAppServerRuntime<Context = CodexAppServerRuntimeContext>(
+export function createCodexAppServerRuntime<
+	Context = CodexAppServerRuntimeContext,
+>(
 	options: CodexAppServerRuntimeOptions<Context>,
 ): CodexAppServerRuntime<Context> {
 	const sessions = new Map<ThreadId, RuntimeSession>();
@@ -175,7 +205,8 @@ export function createCodexAppServerRuntime<Context = CodexAppServerRuntimeConte
 			if (event && sendOutgoingMessage) {
 				await sendOutgoingMessage(event, {
 					context: messageContext.context as Context | undefined,
-					threadId: messageContext.threadId ?? threadIdFromAppServerEvent(event),
+					threadId:
+						messageContext.threadId ?? threadIdFromAppServerEvent(event),
 				});
 			}
 		},
@@ -187,7 +218,11 @@ export function createCodexAppServerRuntime<Context = CodexAppServerRuntimeConte
 		context?: Context,
 	): Promise<void> {
 		if (event.type === "server_notification") {
-			await outgoing.sendServerNotification(event.notification, context, threadId);
+			await outgoing.sendServerNotification(
+				event.notification,
+				context,
+				threadId,
+			);
 			return;
 		}
 		if (event.type === "server_request") {
@@ -211,13 +246,17 @@ export function createCodexAppServerRuntime<Context = CodexAppServerRuntimeConte
 		await sendOutgoingMessage?.(event, { context, threadId });
 	}
 
-	function emitCoreEvent(threadId: ThreadId, event: Event, context?: Context): void {
+	function emitCoreEvent(
+		threadId: ThreadId,
+		event: Event,
+		context?: Context,
+	): void {
 		if (event.msg.type === "session_configured") {
 			return;
 		}
 		const threadState = threadStateManager.threadState(threadId);
 		const tracked = threadState.trackCurrentTurnEvent(event.id, event.msg);
-		const protocolEvents = apply_bespoke_event_handling(event.msg, {
+		const protocolEvents = mapCoreEventToAppServerEvents(event.msg, {
 			activeTurn: tracked.activeTurn,
 			terminalTurn: tracked.terminalTurn,
 			threadId,
@@ -240,7 +279,11 @@ export function createCodexAppServerRuntime<Context = CodexAppServerRuntimeConte
 	});
 	const createSession = (
 		threadId: ThreadId,
-		params: ThreadStartParams | ThreadResumeParams | TurnStartParams | ThreadCompactStartParams,
+		params:
+			| ThreadStartParams
+			| ThreadResumeParams
+			| TurnStartParams
+			| ThreadCompactStartParams,
 		context?: Context,
 		submission?: Submission,
 	): Promise<Session> =>
@@ -287,8 +330,10 @@ export function createCodexAppServerRuntime<Context = CodexAppServerRuntimeConte
 			mcpProcessor.mcpServerStatusList(params, context, request),
 		mcpServerToolCall: (params, context, request) =>
 			mcpProcessor.mcpServerToolCall(params, context, request),
-		threadStart: (params, context) => threadProcessor.threadStart(params, context),
-		threadResume: (params, context) => threadProcessor.threadResume(params, context),
+		threadStart: (params, context) =>
+			threadProcessor.threadStart(params, context),
+		threadResume: (params, context) =>
+			threadProcessor.threadResume(params, context),
 		threadList: (params) => threadProcessor.threadList(params),
 		threadRead: (params) => threadProcessor.threadRead(params),
 		threadNameSet: (params, context) =>
@@ -328,14 +373,17 @@ export function createCodexAppServerRuntime<Context = CodexAppServerRuntimeConte
 		});
 	}
 
-	async function resolveServerRequest(
-		params: { requestId: string | number; result: Result; threadId: ThreadId | string },
-	): Promise<void> {
+	async function resolveServerRequest(params: {
+		requestId: string | number;
+		result: Result;
+		threadId: ThreadId | string;
+	}): Promise<void> {
 		const threadId = asThreadId(String(params.threadId));
 		const targetKey = serverRequestTargetKey(threadId, params.requestId);
-		const request = outgoing.pendingRequestsForThread(threadId).find(
-			(candidate) => candidate.id === params.requestId,
-		) ?? null;
+		const request =
+			outgoing
+				.pendingRequestsForThread(threadId)
+				.find((candidate) => candidate.id === params.requestId) ?? null;
 		if (!request) {
 			serverRequestTargets.delete(targetKey);
 		}
@@ -351,10 +399,13 @@ export function createCodexAppServerRuntime<Context = CodexAppServerRuntimeConte
 		await submitServerRequestResponse(threadId, submission);
 		serverRequestTargets.delete(targetKey);
 		await outgoing.notifyClientResponse(params.requestId, params.result);
-		await emit(threadId, serverRequestResolvedNotification({
-			requestId: params.requestId,
+		await emit(
 			threadId,
-		}));
+			serverRequestResolvedNotification({
+				requestId: params.requestId,
+				threadId,
+			}),
+		);
 	}
 
 	async function connectionClosed(connectionId: number): Promise<void> {
@@ -369,14 +420,17 @@ export function createCodexAppServerRuntime<Context = CodexAppServerRuntimeConte
 		threadStateManager.connectionInitialized(connectionId);
 	}
 
-	async function rejectServerRequest(
-		params: { error: JSONRPCErrorError; requestId: string | number; threadId: ThreadId | string },
-	): Promise<void> {
+	async function rejectServerRequest(params: {
+		error: JSONRPCErrorError;
+		requestId: string | number;
+		threadId: ThreadId | string;
+	}): Promise<void> {
 		const threadId = asThreadId(String(params.threadId));
 		const targetKey = serverRequestTargetKey(threadId, params.requestId);
-		const request = outgoing.pendingRequestsForThread(threadId).find(
-			(candidate) => candidate.id === params.requestId,
-		) ?? null;
+		const request =
+			outgoing
+				.pendingRequestsForThread(threadId)
+				.find((candidate) => candidate.id === params.requestId) ?? null;
 		if (!request) {
 			serverRequestTargets.delete(targetKey);
 		}
@@ -392,10 +446,13 @@ export function createCodexAppServerRuntime<Context = CodexAppServerRuntimeConte
 		await submitServerRequestResponse(threadId, submission);
 		serverRequestTargets.delete(targetKey);
 		await outgoing.notifyClientError(params.requestId, params.error);
-		await emit(threadId, serverRequestResolvedNotification({
-			requestId: params.requestId,
+		await emit(
 			threadId,
-		}));
+			serverRequestResolvedNotification({
+				requestId: params.requestId,
+				threadId,
+			}),
+		);
 	}
 
 	async function submitServerRequestResponse(
@@ -403,11 +460,15 @@ export function createCodexAppServerRuntime<Context = CodexAppServerRuntimeConte
 		submission: Submission,
 	): Promise<void> {
 		if (!isServerRequestResponseSubmission(submission)) {
-			throw new Error("Only server-request response submissions can be routed through CodexAppServerRuntime.");
+			throw new Error(
+				"Only server-request response submissions can be routed through CodexAppServerRuntime.",
+			);
 		}
 		const runtimeSession = sessions.get(threadId);
 		if (!runtimeSession) {
-			throw new Error("Codex thread has no active turn for this server request response.");
+			throw new Error(
+				"Codex thread has no active turn for this server request response.",
+			);
 		}
 		await runtimeSession.session.submit_with_id(submission);
 	}
@@ -422,7 +483,10 @@ export function createCodexAppServerRuntime<Context = CodexAppServerRuntimeConte
 	};
 }
 
-function serverRequestTargetKey(threadId: ThreadId, requestId: string | number): string {
+function serverRequestTargetKey(
+	threadId: ThreadId,
+	requestId: string | number,
+): string {
 	return `${threadId}:${String(requestId)}`;
 }
 
@@ -437,7 +501,8 @@ function serverRequestResponseTarget(
 
 function threadIdFromAppServerEvent(event: AppServerEvent): ThreadId {
 	if (event.type === "server_notification") {
-		const threadId = (event.notification.params as { threadId?: unknown }).threadId;
+		const threadId = (event.notification.params as { threadId?: unknown })
+			.threadId;
 		if (typeof threadId === "string") {
 			return asThreadId(threadId);
 		}

@@ -165,6 +165,17 @@ export type InitializedConnectionSessionState = {
 	optedOutNotificationMethods: ReadonlySet<string>;
 };
 
+export type CodexAppServerConnectionSnapshot = {
+	initialized: InitializedConnectionSessionSnapshot | null;
+};
+
+export type InitializedConnectionSessionSnapshot = {
+	appServerClientName: string;
+	clientVersion: string;
+	experimentalApiEnabled: boolean;
+	optedOutNotificationMethods: string[];
+};
+
 export class CodexAppServerConnectionSessionState {
 	readonly rpcGate = new ConnectionRpcGate();
 	private initializedState: InitializedConnectionSessionState | null = null;
@@ -198,6 +209,38 @@ export class CodexAppServerConnectionSessionState {
 
 	clientVersion(): string | null {
 		return this.initializedState?.clientVersion ?? null;
+	}
+
+	snapshot(): CodexAppServerConnectionSnapshot {
+		return {
+			initialized: this.initializedState
+				? {
+						appServerClientName: this.initializedState.appServerClientName,
+						clientVersion: this.initializedState.clientVersion,
+						experimentalApiEnabled:
+							this.initializedState.experimentalApiEnabled,
+						optedOutNotificationMethods: Array.from(
+							this.initializedState.optedOutNotificationMethods,
+						),
+					}
+				: null,
+		};
+	}
+
+	static fromSnapshot(
+		snapshot?: CodexAppServerConnectionSnapshot | null,
+	): CodexAppServerConnectionSessionState {
+		if (!snapshot?.initialized) {
+			return new CodexAppServerConnectionSessionState();
+		}
+		return new CodexAppServerConnectionSessionState({
+			appServerClientName: snapshot.initialized.appServerClientName,
+			clientVersion: snapshot.initialized.clientVersion,
+			experimentalApiEnabled: snapshot.initialized.experimentalApiEnabled,
+			optedOutNotificationMethods: new Set(
+				snapshot.initialized.optedOutNotificationMethods,
+			),
+		});
 	}
 }
 
@@ -245,7 +288,8 @@ export class CodexAppServerMessageProcessor<Context = unknown> {
 		this.outgoing = options.outgoing;
 		this.requestSerializationQueues =
 			options.requestSerializationQueues ?? new RequestSerializationQueues();
-		this.session = options.session ?? new CodexAppServerConnectionSessionState();
+		this.session =
+			options.session ?? new CodexAppServerConnectionSessionState();
 	}
 
 	async processClientRequest(
@@ -320,7 +364,7 @@ export class CodexAppServerMessageProcessor<Context = unknown> {
 								error instanceof Error
 									? error.message
 									: "Codex App Server request failed.",
-					  };
+						};
 			await this.outgoing.sendError(requestId, responseError);
 			return { error: responseError, type: "error" };
 		}
@@ -477,7 +521,9 @@ export class CodexAppServerMessageProcessor<Context = unknown> {
 		};
 	}
 
-	private requestContext(requestId: RequestId): CodexAppServerRequestContext | undefined {
+	private requestContext(
+		requestId: RequestId,
+	): CodexAppServerRequestContext | undefined {
 		if (!this.outgoing) {
 			return undefined;
 		}
@@ -525,8 +571,9 @@ function defaultConnectionId(): number {
 }
 
 function platformFamily(): string {
-	const navigatorPlatform = (globalThis as { navigator?: { platform?: string } })
-		.navigator?.platform;
+	const navigatorPlatform = (
+		globalThis as { navigator?: { platform?: string } }
+	).navigator?.platform;
 	if (navigatorPlatform?.toLowerCase().includes("win")) {
 		return "windows";
 	}
@@ -534,8 +581,9 @@ function platformFamily(): string {
 }
 
 function platformOs(): string {
-	const navigatorPlatform = (globalThis as { navigator?: { platform?: string } })
-		.navigator?.platform?.toLowerCase();
+	const navigatorPlatform = (
+		globalThis as { navigator?: { platform?: string } }
+	).navigator?.platform?.toLowerCase();
 	if (navigatorPlatform?.includes("mac")) {
 		return "macos";
 	}

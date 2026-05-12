@@ -4,44 +4,52 @@ Status: accepted
 
 ## Context
 
-`@jrkropp/codex-js` is a Codex runtime and UI kit. The package needs a source layout that makes upstream source trees obvious, keeps package-owned runtime code separate, and lets consuming applications extend behavior without editing package source.
+The workspace publishes a core Codex SDK and a separate React UI package. The
+source layout should look like a conventional npm workspace, not like an
+extracted application or a public mirror of reference repositories.
 
-Codex and T3 are source references. Their folder structure, naming, concepts, classes, contracts, and lifecycle boundaries are preserved as closely as practical so updates can be ported by comparing the corresponding source files.
+Codex remains the terminology and runtime source of truth, but reference
+material belongs outside publishable package source.
 
 ## Decision
 
-The package source is organized around upstream source trees, a package-owned runtime, React components, React hooks, and testing utilities.
+The workspace uses two packages:
 
 ```text
-src/
-  upstream/
-    codex-rs/
-    t3code/
+packages/
+  codex-js/
+    src/client/
+    src/server/
+    src/testing/
+    src/internal/
+    src/generated/
 
-  runtime/
-  components/
-  hooks/
-  testing/
+  codex-js-react/
+    src/components/
+    src/hooks/
+    src/shadcn/
+    src/styles.css
 ```
 
-`src/upstream/codex-rs` is the Codex-shaped runtime upstream source. `src/upstream/t3code` is the T3-shaped chat UI upstream source. Code in these trees follows upstream names, file boundaries, contracts, and lifecycle patterns.
+`packages/codex-js` is dependency-light and non-React. It owns browser client
+helpers, platform-neutral app-server helpers, runtime contracts, store
+contracts, model-client creation, dynamic tool mapping, and testing utilities.
 
-`src/runtime` contains package-owned, platform-neutral Codex lifecycle code and contracts. It does not depend on React, routing, Cloudflare, Durable Objects, host application projects, or host-app business behavior.
+`packages/codex-js-react` owns React components, hooks, shadcn-compatible
+primitives, generated CSS, and React-only dependencies.
 
-`src/components` contains the stable public React component surface built from the T3 upstream source. Developers import application-facing chat components from `components` rather than from the upstream tree.
-
-`src/hooks` contains the stable public React hooks that bind a configured runtime to React applications. Hooks stay separate from components so developers can use the runtime with their own UI.
-
-`src/testing` contains test utilities and lightweight helpers for package consumers and package tests.
-
-Platform-specific implementation details are not source primitives. Cloudflare Workers, Durable Objects, browser storage, routing, credentials, tools, prompts, and product-specific renderers live in consuming applications or documentation guides.
+Reference and parity material lives in `external/`, `reference/`, or
+`docs/internal/`. It is not exposed through package exports or included in npm
+tarballs.
 
 ## Consequences
 
-Upstream-shaped code is visually isolated from package-owned code. Package-owned abstractions stay outside the upstream trees.
+Public imports are boring and semantic. Consumers use `/client`, `/server`,
+`/testing`, the React package root, `/shadcn`, and `/styles.css`.
 
-The package remains replaceable. Consuming applications extend behavior through composition, contracts, slots, renderers, tools, prompts, storage, and app-server boundaries instead of modifying package source.
+Cloudflare Workers, Durable Objects, local files, databases, credentials, auth,
+prompts, and product-specific tools remain host application concerns.
 
-A Durable Object is one possible implementation of a Codex store and app-server boundary. It is not a primitive of the Codex assistant package.
-
-When behavior is wrong or unclear, the first step is to compare against Codex or T3 and realign the package with the corresponding source reference.
+When behavior is wrong or unclear, compare against Codex terminology and
+lifecycle concepts, then implement the package-facing API in the conventional
+package folders.

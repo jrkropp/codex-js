@@ -58,11 +58,32 @@ export {
 	ThreadSortKey,
 	TurnRequestProcessor,
 } from "../runtime";
+export {
+	createCodexAppServer,
+	createCodexAppServerConnection,
+	InMemoryPendingServerRequestStore,
+	jsonRpcErrorFromUnknown,
+} from "./app-server";
+export {
+	dynamicToolResponse,
+	defineDynamicTool,
+	defineDynamicToolset,
+	dynamicToolSpecFromDefinition,
+	dynamicToolSpecsFromDefinitions,
+	findDynamicTool,
+	validateDynamicToolDefinitions,
+} from "./dynamic-tools";
+export {
+	dynamicToolResponse as codexDynamicToolResponse,
+	defineDynamicTool as defineCodexDynamicTool,
+	defineDynamicToolset as defineCodexDynamicToolset,
+} from "./dynamic-tools";
 
 export type {
 	AppendThreadItemsParams,
 	AppServerEvent,
 	AppServerRequestHandle,
+	ArchiveThreadParams,
 	ClientRequest,
 	ClientRequestSerializationScope,
 	CodexAppServer,
@@ -76,6 +97,7 @@ export type {
 	CodexAppServerRuntime,
 	CodexAppServerRuntimeContext,
 	CodexAppServerRuntimeOptions,
+	CodexAppServerConnectionSnapshot,
 	CodexAppServerRuntimeOptions as CreateCodexAppServerRuntimeOptions,
 	CodexAppServerRuntime as CreatedCodexAppServerRuntime,
 	CollaborationMode,
@@ -102,7 +124,9 @@ export type {
 	JSONRPCResponse,
 	ListMcpServerStatusParams,
 	ListMcpServerStatusResponse,
+	ListThreadsParams,
 	LocalThreadStoreConfig,
+	LoadThreadHistoryParams,
 	McpConnectionManager,
 	McpResourceInfo,
 	McpResourceReadParams,
@@ -135,6 +159,9 @@ export type {
 	RequestContext,
 	RequestId,
 	RequestSerializationQueueKey,
+	ReadThreadByRolloutPathParams,
+	ReadThreadParams,
+	ResumeThreadParams,
 	ResponseCreateWsRequest,
 	ResponseEvent,
 	ResponseProcessedWsRequest,
@@ -143,6 +170,7 @@ export type {
 	ResponsesClientInput,
 	ResponsesWsRequest,
 	Result,
+	RolloutItem,
 	RuntimeSession,
 	SandboxPolicy,
 	ServerNotification,
@@ -166,6 +194,7 @@ export type {
 	ThreadMetadataUpdateResponse,
 	ThreadPage,
 	ThreadPersistenceMetadata,
+	UpdateThreadMetadataParams,
 	ThreadReadParams,
 	ThreadReadResponse,
 	ThreadResumeParams,
@@ -190,3 +219,19 @@ export type {
 	TypedRequestError,
 	UserInput,
 } from "../runtime";
+export type {
+	CodexAppServerConnection,
+	CodexAppServerDefaults,
+	CreateCodexAppServerConnectionOptions,
+	CreateCodexAppServerOptions,
+	CreatedCodexAppServer,
+	PendingServerRequestRecord,
+	PendingServerRequestStore,
+} from "./app-server";
+export type {
+	DefinedDynamicTool,
+	DefinedDynamicToolset,
+	DynamicToolDefinition,
+	DynamicToolExecute,
+	DynamicToolExecutionContext,
+} from "./dynamic-tools";

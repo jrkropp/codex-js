@@ -1,24 +1,23 @@
 # System Tour
 
-`@jrkropp/codex-js` is a portable Codex runtime and T3-shaped
-chat UI kit. It is not a host application package, a Cloudflare package, or a React
-Router package. host application is one consuming application that proves the
-package boundary.
+`@jrkropp/codex-js` is a portable Codex runtime SDK.
+`@jrkropp/codex-js-react` is the React UI package. Neither package is a host
+application, a Cloudflare package, or a React Router package.
 
 ## Layers
 
-The package has four layers:
+The workspace has four layers:
 
-| Layer | Responsibility |
-| --- | --- |
-| `src/upstream/codex-rs` | Codex runtime, thread store, protocol, tools, model transport, and app-server protocol primitives. |
-| `src/upstream/t3code` | T3Chat composer, timeline, model picker, image previews, command menus, and chat interaction helpers. |
-| `src/runtime` | Package-owned Codex lifecycle contracts, app-server boundary, store boundary, and route-neutral protocol state. |
-| `src/components` and `src/hooks` | Stable React surfaces that bind Codex protocol state to T3-derived chat presentation. |
+| Layer                            | Responsibility                                                                                    |
+| -------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `packages/codex-js/src/client`   | Browser app-server WebSocket client and protocol event helpers.                                   |
+| `packages/codex-js/src/server`   | App-server runtime helpers, connection bridge, stores, model transport, and dynamic tool helpers. |
+| `packages/codex-js/src/internal` | Implemented Codex ports and package internals.                                                    |
+| `packages/codex-js-react/src`    | Stable React components, hooks, shadcn primitives, and CSS.                                       |
 
-Codex source defines runtime semantics. T3 source defines browser interaction
-ownership. The package facades connect the two without letting product behavior
-leak into either upstream-shaped tree.
+Codex source defines runtime semantics. The package facades expose those
+semantics without leaking product behavior or reference-source layout into npm
+imports.
 
 ## Runtime Flow
 
@@ -49,7 +48,7 @@ A consuming app provides product policy and platform placement:
 - prompts, developer instructions, dynamic tools, and scopes
 - routes, auth, deployment, WebSocket delivery, and product renderers
 
-host application supplies those pieces from its app folders. The package never
+The host application supplies those pieces from its app folders. The package never
 imports host application routes, domains, Worker bindings, storage keys, prompts, or
 branding.
 
@@ -58,14 +57,11 @@ branding.
 Most integrations should enter through the public surfaces:
 
 - `@jrkropp/codex-js/server`
-- `@jrkropp/codex-js/react`
-- `@jrkropp/codex-js/react`
+- `@jrkropp/codex-js/client`
+- `@jrkropp/codex-js/testing`
+- `@jrkropp/codex-js-react`
+- `@jrkropp/codex-js-react/shadcn`
+- `@jrkropp/codex-js-react/styles.css`
 
-The package root is intentionally small and only exposes the plug-and-play chat
-component entrypoint. Runtime, hook, component, Codex mirror, and T3 mirror APIs
-stay on their explicit subpaths.
-
-The upstream-shaped Codex and T3 import paths remain available for low-level
-adapter work, tests, and source-parity updates. Product UI should prefer the
-public facades unless it is intentionally bridging into a specific upstream
-primitive.
+The package roots are intentionally small. Reference-source and mirror material
+is not a public import surface.
