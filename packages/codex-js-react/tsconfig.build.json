@@ -1,0 +1,19 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"declaration": true,
+		"declarationMap": false,
+		"emitDeclarationOnly": true,
+		"noEmit": false,
+		"outDir": "dist",
+		"paths": {
+			"@jrkropp/codex-js": ["packages/codex-js/dist/index.d.ts"],
+			"@jrkropp/codex-js/client": ["packages/codex-js/dist/client/index.d.ts"],
+			"@jrkropp/codex-js/server": ["packages/codex-js/dist/server/index.d.ts"],
+			"@jrkropp/codex-js/testing": ["packages/codex-js/dist/testing/index.d.ts"]
+		},
+		"rootDir": "src"
+	},
+	"files": ["src/index.ts", "src/shadcn/index.ts"],
+	"include": []
+}

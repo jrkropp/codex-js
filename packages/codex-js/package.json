@@ -4,9 +4,10 @@
 	"description": "Unofficial TypeScript Codex runtime for building Codex-backed web apps.",
 	"license": "Apache-2.0",
 	"type": "module",
-	"sideEffects": [
-		"**/*.css"
-	],
+	"sideEffects": false,
+	"engines": {
+		"node": ">=20"
+	},
 	"files": [
 		"dist",
 		"README.md",
@@ -27,122 +28,22 @@
 			"types": "./dist/server/index.d.ts",
 			"import": "./dist/server/index.js"
 		},
-		"./react": {
-			"types": "./dist/react/index.d.ts",
-			"import": "./dist/react/index.js"
-		},
-		"./shadcn": {
-			"types": "./dist/shadcn/index.d.ts",
-			"import": "./dist/shadcn/index.js"
-		},
 		"./testing": {
 			"types": "./dist/testing/index.d.ts",
 			"import": "./dist/testing/index.js"
-		},
-		"./unstable/codex-rs/config": {
-			"types": "./dist/unstable/codex-rs/config/index.d.ts",
-			"import": "./dist/unstable/codex-rs/config/index.js"
-		},
-		"./unstable/codex-rs/parity": {
-			"types": "./dist/unstable/codex-rs/parity.d.ts",
-			"import": "./dist/unstable/codex-rs/parity.js"
-		},
-		"./unstable/codex-rs/unsupported": {
-			"types": "./dist/unstable/codex-rs/unsupported.d.ts",
-			"import": "./dist/unstable/codex-rs/unsupported.js"
-		},
-		"./unstable/codex-rs/core": {
-			"types": "./dist/unstable/codex-rs/core/index.d.ts",
-			"import": "./dist/unstable/codex-rs/core/index.js"
-		},
-		"./unstable/codex-rs/core/config": {
-			"types": "./dist/unstable/codex-rs/core/config/index.d.ts",
-			"import": "./dist/unstable/codex-rs/core/config/index.js"
-		},
-		"./unstable/codex-rs/thread-store": {
-			"types": "./dist/unstable/codex-rs/thread-store/index.d.ts",
-			"import": "./dist/unstable/codex-rs/thread-store/index.js"
-		},
-		"./unstable/codex-rs/codex-api": {
-			"types": "./dist/unstable/codex-rs/codex-api/index.d.ts",
-			"import": "./dist/unstable/codex-rs/codex-api/index.js"
-		},
-		"./unstable/codex-rs/app-server": {
-			"types": "./dist/unstable/codex-rs/app-server/index.d.ts",
-			"import": "./dist/unstable/codex-rs/app-server/index.js"
-		},
-		"./unstable/codex-rs/app-server-protocol": {
-			"types": "./dist/unstable/codex-rs/app-server-protocol/index.d.ts",
-			"import": "./dist/unstable/codex-rs/app-server-protocol/index.js"
-		},
-		"./unstable/codex-rs/app-server-protocol/protocol": {
-			"types": "./dist/unstable/codex-rs/app-server-protocol/protocol.d.ts",
-			"import": "./dist/unstable/codex-rs/app-server-protocol/protocol.js"
-		},
-		"./unstable/codex-rs/model-provider": {
-			"types": "./dist/unstable/codex-rs/model-provider/index.d.ts",
-			"import": "./dist/unstable/codex-rs/model-provider/index.js"
-		},
-		"./unstable/codex-rs/models-manager": {
-			"types": "./dist/unstable/codex-rs/models-manager/index.d.ts",
-			"import": "./dist/unstable/codex-rs/models-manager/index.js"
-		},
-		"./unstable/codex-rs/utils/output-truncation": {
-			"types": "./dist/unstable/codex-rs/utils/output-truncation.d.ts",
-			"import": "./dist/unstable/codex-rs/utils/output-truncation.js"
-		},
-		"./unstable/codex-rs/utils/string": {
-			"types": "./dist/unstable/codex-rs/utils/string.d.ts",
-			"import": "./dist/unstable/codex-rs/utils/string.js"
-		},
-		"./unstable/t3code/apps/web": {
-			"types": "./dist/unstable/t3code/apps/web/index.d.ts",
-			"import": "./dist/unstable/t3code/apps/web/index.js"
-		},
-		"./unstable/t3code/apps/web/components/chat": {
-			"types": "./dist/unstable/t3code/apps/web/components/chat.d.ts",
-			"import": "./dist/unstable/t3code/apps/web/components/chat.js"
-		},
-		"./styles.css": "./dist/styles.css"
+		}
 	},
 	"scripts": {
-		"build": "tsup && node scripts/copy-assets.mjs",
+		"build": "pnpm clean && tsup && tsc -p tsconfig.build.json --pretty false && node ../../scripts/fix-dts-extensions.mjs dist",
 		"clean": "rm -rf dist",
-		"codex:mirror": "node scripts/generate-codex-mirror.mjs",
-		"pack:dry-run": "npm pack --dry-run",
+		"pack:dry-run": "pnpm pack --dry-run",
 		"publint": "publint",
 		"typecheck": "tsc -p tsconfig.json --pretty false"
 	},
 	"dependencies": {
-		"@legendapp/list": "^3.0.0-beta.44",
-		"@lexical/react": "^0.44.0",
-		"class-variance-authority": "^0.7.1",
-		"clsx": "^2.1.1",
-		"cmdk": "^1.1.1",
-		"lexical": "^0.44.0",
-		"lucide-react": "^1.11.0",
-		"radix-ui": "^1.4.3",
-		"react-markdown": "^10.1.0",
-		"remark-gfm": "^4.0.1",
-		"smol-toml": "^1.6.1",
-		"tailwind-merge": "^3.5.0",
-		"zustand": "^5.0.13"
-	},
-	"peerDependencies": {
-		"react": "^18.3.0 || ^19.0.0",
-		"react-dom": "^18.3.0 || ^19.0.0"
-	},
-	"peerDependenciesMeta": {
-		"react": {
-			"optional": true
-		},
-		"react-dom": {
-			"optional": true
-		}
+		"smol-toml": "^1.6.1"
 	},
 	"devDependencies": {
-		"@types/react": "19.2.7",
-		"@types/react-dom": "19.2.3",
 		"typescript": "5.8.3"
 	},
 	"publishConfig": {

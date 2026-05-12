@@ -1,13 +1,5 @@
-@import "tailwindcss" source(".");
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import "@jrkropp/codex-js-react/styles.css";
 @import "@fontsource-variable/geist";
-
-@custom-variant dark (&:is(.dark *));
-@source "../../../packages/codex-js/src/components";
-@source "../../../packages/codex-js/src/hooks";
-@source "../../../packages/codex-js/src/shadcn";
-@source "../../../packages/codex-js/src/upstream/t3code";
 
 :root {
 	--background: oklch(0.976 0.003 240);

@@ -1,0 +1,7 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"tsBuildInfoFile": "../../node_modules/.tmp/tsconfig.codex-js-react.tsbuildinfo"
+	},
+	"include": ["src/**/*.ts", "src/**/*.tsx", "tsup.config.ts"]
+}
