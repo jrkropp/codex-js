@@ -13,8 +13,8 @@ import {
 	type CodexChatComposerSkill,
 	type CodexChatInteractionMode,
 	type CodexChatPendingRequestRenderContext,
-} from "@jrkropp/codex-js/react";
-import { createDefaultTurnStartParams } from "@jrkropp/codex-js/react";
+} from "@jrkropp/codex-js-react";
+import { createDefaultTurnStartParams } from "@jrkropp/codex-js-react";
 import {
 	billingInvoiceById,
 	billingSuggestedPrompts,

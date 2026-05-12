@@ -2,53 +2,16 @@ import type { Socket } from "node:net";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, type ViteDevServer } from "vite";
 import { WebSocketServer } from "ws";
+import { codexJsAliases } from "../codex-js-vite-aliases";
 
 type MinimalCodexAppServer = ReturnType<
-	typeof import("./src/minimal-app-server")["createMinimalCodexAppServer"]
+	(typeof import("./src/minimal-app-server"))["createMinimalCodexAppServer"]
 >;
 
 type TicketRecord = {
 	apiKey: string | null;
 	expiresAt: number;
 };
-
-const codexJsAliases = [
-	{
-		find: "@jrkropp/codex-js/client",
-		replacement: new URL("../../packages/codex-js/src/client/index.ts", import.meta.url)
-			.pathname,
-	},
-	{
-		find: "@jrkropp/codex-js/react",
-		replacement: new URL("../../packages/codex-js/src/react/index.ts", import.meta.url)
-			.pathname,
-	},
-	{
-		find: "@jrkropp/codex-js/server",
-		replacement: new URL("../../packages/codex-js/src/server/index.ts", import.meta.url)
-			.pathname,
-	},
-	{
-		find: "@jrkropp/codex-js/shadcn",
-		replacement: new URL("../../packages/codex-js/src/shadcn/index.ts", import.meta.url)
-			.pathname,
-	},
-	{
-		find: "@jrkropp/codex-js/testing",
-		replacement: new URL("../../packages/codex-js/src/testing/index.ts", import.meta.url)
-			.pathname,
-	},
-	{
-		find: "@jrkropp/codex-js/styles.css",
-		replacement: new URL("../../packages/codex-js/src/styles.css", import.meta.url)
-			.pathname,
-	},
-	{
-		find: /^@jrkropp\/codex-js$/,
-		replacement: new URL("../../packages/codex-js/src/index.ts", import.meta.url)
-			.pathname,
-	},
-];
 
 export default defineConfig({
 	resolve: {
@@ -87,118 +50,134 @@ export default defineConfig({
 				});
 
 				server.httpServer?.on("upgrade", (request, socket, head) => {
-					const url = request.url ? new URL(request.url, "http://localhost") : null;
+					const url = request.url
+						? new URL(request.url, "http://localhost")
+						: null;
 					if (url?.pathname !== "/api/codex/app-server") {
 						return;
 					}
 					const ticket = url.searchParams.get("ticket");
 					const ticketRecord = ticket ? tickets.get(ticket) : null;
-					if (!ticket || !ticketRecord || ticketRecord.expiresAt <= Date.now()) {
+					if (
+						!ticket ||
+						!ticketRecord ||
+						ticketRecord.expiresAt <= Date.now()
+					) {
 						socket.destroy();
 						return;
 					}
 					tickets.delete(ticket);
 					void appServer().then((minimalAppServer) => {
-						wsServer.handleUpgrade(request, socket as Socket, head, (webSocket) => {
-							const codexSocket = webSocket as unknown as MinimalWebSocket;
-							const processor = minimalAppServer.createProcessor();
-							const pendingServerRequestThreads = new Map<string | number, string>();
-							const subscriptions = new Map<string, () => void>();
-							const subscribeThread = (threadId: string) => {
-								if (subscriptions.has(threadId)) {
-									return;
-								}
-								subscriptions.set(
-									threadId,
-									minimalAppServer.subscribe(threadId, {
-										send(event) {
-											const message = outgoingMessageFromEvent(event);
-											if (!message) {
-												return;
-											}
-											if (event.type === "server_request") {
-												pendingServerRequestThreads.set(event.request.id, threadId);
-											}
-											codexSocket.send(JSON.stringify(message));
-										},
-									}),
-								);
-							};
-
-							codexSocket.on("message", (message) => {
-								const parsed = parseJsonMessage(message);
-								if (!isJsonObject(parsed)) {
-									return;
-								}
-								const id = parsed.id;
-								if (
-									(typeof id === "string" || typeof id === "number") &&
-									"result" in parsed
-								) {
-									const threadId = pendingServerRequestThreads.get(id);
-									if (threadId) {
-										void minimalAppServer.resolveServerRequest(
-											threadId,
-											id,
-											parsed.result,
-										);
+						wsServer.handleUpgrade(
+							request,
+							socket as Socket,
+							head,
+							(webSocket) => {
+								const codexSocket = webSocket as unknown as MinimalWebSocket;
+								const processor = minimalAppServer.createProcessor();
+								const pendingServerRequestThreads = new Map<
+									string | number,
+									string
+								>();
+								const subscriptions = new Map<string, () => void>();
+								const subscribeThread = (threadId: string) => {
+									if (subscriptions.has(threadId)) {
+										return;
 									}
-									return;
-								}
-								if (
-									(typeof id === "string" || typeof id === "number") &&
-									isJsonObject(parsed.error)
-								) {
-									const threadId = pendingServerRequestThreads.get(id);
-									if (threadId) {
-										void minimalAppServer.rejectServerRequest(
-											threadId,
-											id,
-											{
-												code: typeof parsed.error.code === "number" ? parsed.error.code : -32000,
+									subscriptions.set(
+										threadId,
+										minimalAppServer.subscribe(threadId, {
+											send(event) {
+												const message = outgoingMessageFromEvent(event);
+												if (!message) {
+													return;
+												}
+												if (event.type === "server_request") {
+													pendingServerRequestThreads.set(
+														event.request.id,
+														threadId,
+													);
+												}
+												codexSocket.send(JSON.stringify(message));
+											},
+										}),
+									);
+								};
+
+								codexSocket.on("message", (message) => {
+									const parsed = parseJsonMessage(message);
+									if (!isJsonObject(parsed)) {
+										return;
+									}
+									const id = parsed.id;
+									if (
+										(typeof id === "string" || typeof id === "number") &&
+										"result" in parsed
+									) {
+										const threadId = pendingServerRequestThreads.get(id);
+										if (threadId) {
+											void minimalAppServer.resolveServerRequest(
+												threadId,
+												id,
+												parsed.result,
+											);
+										}
+										return;
+									}
+									if (
+										(typeof id === "string" || typeof id === "number") &&
+										isJsonObject(parsed.error)
+									) {
+										const threadId = pendingServerRequestThreads.get(id);
+										if (threadId) {
+											void minimalAppServer.rejectServerRequest(threadId, id, {
+												code:
+													typeof parsed.error.code === "number"
+														? parsed.error.code
+														: -32000,
 												message:
 													typeof parsed.error.message === "string"
 														? parsed.error.message
 														: "Request failed.",
-											},
-										);
-									}
-									return;
-								}
-								if (
-									typeof parsed.method !== "string" ||
-									(typeof id !== "string" && typeof id !== "number")
-								) {
-									return;
-								}
-								const threadId = threadIdFromClientRequest(parsed);
-								if (threadId) {
-									subscribeThread(threadId);
-								}
-								void minimalAppServer
-									.handleWithProcessor(processor, parsed as never, {
-										apiKey: ticketRecord.apiKey,
-									})
-									.then((result) => {
-										const responseThreadId = threadIdFromResponse(result);
-										if (responseThreadId) {
-											subscribeThread(responseThreadId);
+											});
 										}
-										codexSocket.send(JSON.stringify({ id, result }));
-									})
-									.catch((error) => {
-										codexSocket.send(
-											JSON.stringify({ error: jsonRpcError(error), id }),
-										);
-									});
-							});
-							codexSocket.on("close", () => {
-								for (const unsubscribe of subscriptions.values()) {
-									unsubscribe();
-								}
-								void processor.connectionClosed();
-							});
-						});
+										return;
+									}
+									if (
+										typeof parsed.method !== "string" ||
+										(typeof id !== "string" && typeof id !== "number")
+									) {
+										return;
+									}
+									const threadId = threadIdFromClientRequest(parsed);
+									if (threadId) {
+										subscribeThread(threadId);
+									}
+									void minimalAppServer
+										.handleWithProcessor(processor, parsed as never, {
+											apiKey: ticketRecord.apiKey,
+										})
+										.then((result) => {
+											const responseThreadId = threadIdFromResponse(result);
+											if (responseThreadId) {
+												subscribeThread(responseThreadId);
+											}
+											codexSocket.send(JSON.stringify({ id, result }));
+										})
+										.catch((error) => {
+											codexSocket.send(
+												JSON.stringify({ error: jsonRpcError(error), id }),
+											);
+										});
+								});
+								codexSocket.on("close", () => {
+									for (const unsubscribe of subscriptions.values()) {
+										unsubscribe();
+									}
+									void processor.connectionClosed();
+								});
+							},
+						);
 					});
 				});
 			},
@@ -240,8 +219,12 @@ function outgoingMessageFromEvent(event: {
 	return null;
 }
 
-function threadIdFromClientRequest(request: { params?: unknown }): string | null {
-	const params = request.params as { threadId?: unknown; thread_id?: unknown } | undefined;
+function threadIdFromClientRequest(request: {
+	params?: unknown;
+}): string | null {
+	const params = request.params as
+		| { threadId?: unknown; thread_id?: unknown }
+		| undefined;
 	if (typeof params?.threadId === "string") {
 		return params.threadId;
 	}
@@ -296,7 +279,11 @@ function messageToString(message: unknown): string {
 		return Buffer.from(message).toString("utf8");
 	}
 	if (ArrayBuffer.isView(message)) {
-		return Buffer.from(message.buffer, message.byteOffset, message.byteLength).toString("utf8");
+		return Buffer.from(
+			message.buffer,
+			message.byteOffset,
+			message.byteLength,
+		).toString("utf8");
 	}
 	if (Array.isArray(message)) {
 		return Buffer.concat(message).toString("utf8");

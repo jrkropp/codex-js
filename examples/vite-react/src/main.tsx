@@ -1,12 +1,12 @@
 import { createRoot } from "react-dom/client";
 import type { CodexAppServer } from "@jrkropp/codex-js/client";
-import { CodexChat, CodexChatLayout } from "@jrkropp/codex-js/react";
+import { CodexChat, CodexChatLayout } from "@jrkropp/codex-js-react";
 import {
 	SidebarContent,
 	SidebarGroup,
 	SidebarGroupContent,
 	SidebarGroupLabel,
-} from "@jrkropp/codex-js/shadcn";
+} from "@jrkropp/codex-js-react/shadcn";
 import "./styles.css";
 
 const appServer: CodexAppServer = {

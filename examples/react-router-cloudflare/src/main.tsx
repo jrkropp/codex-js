@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { createCodexAppServerClient } from "@jrkropp/codex-js/client";
-import { CodexChat } from "@jrkropp/codex-js/react";
+import { CodexChat } from "@jrkropp/codex-js-react";
 import "./styles.css";
 
 function appServerUrl() {

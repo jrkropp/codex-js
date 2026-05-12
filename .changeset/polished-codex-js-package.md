@@ -1,5 +1,6 @@
 ---
-"@jrkropp/codex-js": patch
+"@jrkropp/codex-js": minor
+"@jrkropp/codex-js-react": minor
 ---
 
-Polish the npm package contract by limiting stable exports to the root, client, server, react, shadcn, testing, and styles surfaces; moving upstream Codex and T3 mirrors under explicit unstable subpaths; splitting browser and runtime build targets; documenting npm consumer setup; and adding packed consumer checks for server and Vite React usage.
+Restructure codex-js into a standard two-package workspace. `@jrkropp/codex-js` now owns the non-React runtime, client, server, and testing surfaces, while `@jrkropp/codex-js-react` owns the React components, shadcn-compatible exports, and generated stylesheet.

@@ -10,177 +10,172 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, relative } from "node:path";
+import { isAbsolute, join, relative } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
 const repoRoot = process.cwd();
-const packageRoot = join(repoRoot, "packages/codex-js");
+const corePackageRoot = join(repoRoot, "packages/codex-js");
+const reactPackageRoot = join(repoRoot, "packages/codex-js-react");
 
-describe("codex-js package boundary", () => {
-	it("publishes curated stable exports plus explicit unstable mirrors", () => {
-		const packageJson = JSON.parse(
-			readFileSync(join(packageRoot, "package.json"), "utf8"),
-		) as {
-			exports: Record<string, string | { import: string; types: string }>;
-			files: string[];
-			name: string;
-			private?: boolean;
-			version: string;
-		};
+describe("npm package boundaries", () => {
+	it("publishes the intended core and React export contracts", () => {
+		const corePackageJson = readPackageJson(corePackageRoot);
+		const reactPackageJson = readPackageJson(reactPackageRoot);
 
-		expect(packageJson.name).toBe("@jrkropp/codex-js");
-		expect(packageJson.version).toMatch(/^\d+\.\d+\.\d+(?:[-+].+)?$/);
-		expect(packageJson.private).toBeUndefined();
-		expect(packageJson.files).toEqual([
-			"dist",
-			"README.md",
-			"CHANGELOG.md",
-			"LICENSE",
-			"NOTICE",
+		expect(corePackageJson.name).toBe("@jrkropp/codex-js");
+		expect(corePackageJson.private).toBeUndefined();
+		expect(corePackageJson.files).toEqual(packageFiles());
+		expect(Object.keys(corePackageJson.exports)).toEqual([
+			".",
+			"./client",
+			"./server",
+			"./testing",
 		]);
-		expect(packageJson.exports).toMatchObject({
+		expect(corePackageJson.exports).toEqual({
 			".": { import: "./dist/index.js", types: "./dist/index.d.ts" },
 			"./client": {
 				import: "./dist/client/index.js",
 				types: "./dist/client/index.d.ts",
 			},
-			"./react": {
-				import: "./dist/react/index.js",
-				types: "./dist/react/index.d.ts",
-			},
 			"./server": {
 				import: "./dist/server/index.js",
 				types: "./dist/server/index.d.ts",
-			},
-			"./shadcn": {
-				import: "./dist/shadcn/index.js",
-				types: "./dist/shadcn/index.d.ts",
 			},
 			"./testing": {
 				import: "./dist/testing/index.js",
 				types: "./dist/testing/index.d.ts",
 			},
-			"./unstable/codex-rs/config": {
-				import: "./dist/unstable/codex-rs/config/index.js",
-				types: "./dist/unstable/codex-rs/config/index.d.ts",
-			},
-			"./unstable/codex-rs/core": {
-				import: "./dist/unstable/codex-rs/core/index.js",
-				types: "./dist/unstable/codex-rs/core/index.d.ts",
-			},
-			"./unstable/codex-rs/app-server": {
-				import: "./dist/unstable/codex-rs/app-server/index.js",
-				types: "./dist/unstable/codex-rs/app-server/index.d.ts",
-			},
-			"./unstable/t3code/apps/web": {
-				import: "./dist/unstable/t3code/apps/web/index.js",
-				types: "./dist/unstable/t3code/apps/web/index.d.ts",
+		});
+		expect(corePackageJson.dependencies).not.toHaveProperty("react");
+		expect(corePackageJson.peerDependencies).toBeUndefined();
+
+		expect(reactPackageJson.name).toBe("@jrkropp/codex-js-react");
+		expect(reactPackageJson.private).toBeUndefined();
+		expect(reactPackageJson.files).toEqual(packageFiles());
+		expect(Object.keys(reactPackageJson.exports)).toEqual([
+			".",
+			"./shadcn",
+			"./styles.css",
+		]);
+		expect(reactPackageJson.exports).toEqual({
+			".": { import: "./dist/index.js", types: "./dist/index.d.ts" },
+			"./shadcn": {
+				import: "./dist/shadcn/index.js",
+				types: "./dist/shadcn/index.d.ts",
 			},
 			"./styles.css": "./dist/styles.css",
 		});
-		expect(packageJson.exports).not.toHaveProperty("./runtime");
-		expect(packageJson.exports).not.toHaveProperty("./components");
-		expect(packageJson.exports).not.toHaveProperty("./hooks");
-		expect(packageJson.exports).not.toHaveProperty("./codex-rs/core");
-		expect(packageJson.exports).not.toHaveProperty("./t3code/apps/web");
-		expect(JSON.stringify(packageJson.exports)).not.toContain("./src/");
+		expect(reactPackageJson.dependencies).toHaveProperty("@jrkropp/codex-js");
+		expect(reactPackageJson.peerDependencies).toMatchObject({
+			react: expect.any(String),
+			"react-dom": expect.any(String),
+		});
+
+		for (const packageJson of [corePackageJson, reactPackageJson]) {
+			const metadata = JSON.stringify(packageJson);
+			expect(metadata).not.toContain("./src/");
+			expect(metadata).not.toContain("unstable");
+			expect(metadata).not.toContain("codex-rs");
+			expect(metadata).not.toContain("t3code");
+			expect(metadata).not.toContain("upstream");
+		}
 	});
 
-	it("keeps public examples on stable package surfaces only", () => {
+	it("keeps examples on public package surfaces only", () => {
 		const exampleSources = readSourceFiles(join(repoRoot, "examples"));
-		const forbiddenImports = exampleSources.flatMap((file) =>
-			Array.from(file.contents.matchAll(/from\s+["']([^"']+)["']/g))
-				.map((match) => match[1] ?? "")
-				.filter(
-					(specifier) =>
-						specifier.includes("packages/codex-js") ||
-						specifier.startsWith("@jrkropp/codex-js/runtime") ||
-						specifier.startsWith("@jrkropp/codex-js/components") ||
-						specifier.startsWith("@jrkropp/codex-js/hooks") ||
-						specifier.startsWith("@jrkropp/codex-js/codex-rs") ||
-						specifier.startsWith("@jrkropp/codex-js/t3code") ||
-						specifier.startsWith("@jrkropp/codex-js/unstable"),
-				)
-				.map((specifier) => `${file.relativePath}: ${specifier}`),
+		const forbiddenReferences = exampleSources.flatMap((file) =>
+			[
+				"packages/codex-js/src/components",
+				"packages/codex-js/src/hooks",
+				"packages/codex-js/src/shadcn",
+				"packages/codex-js/src/upstream",
+				"@jrkropp/codex-js/react",
+				"@jrkropp/codex-js/shadcn",
+				"@jrkropp/codex-js/styles.css",
+				"@jrkropp/codex-js/unstable",
+			]
+				.filter((reference) => file.contents.includes(reference))
+				.map((reference) => `${file.relativePath}: ${reference}`),
 		);
-		const publicImports = exampleSources.flatMap((file) =>
-			Array.from(file.contents.matchAll(/from\s+["']([^"']+)["']/g))
+		const publicReferences = exampleSources.flatMap((file) =>
+			Array.from(
+				file.contents.matchAll(/(?:from\s+|import\s+)["']([^"']+)["']/g),
+			)
 				.map((match) => match[1] ?? "")
 				.filter((specifier) => specifier.startsWith("@jrkropp/codex-js"))
 				.map((specifier) => `${file.relativePath}: ${specifier}`),
 		);
 
-		expect(forbiddenImports).toEqual([]);
-		expect(publicImports).toEqual(
+		expect(forbiddenReferences).toEqual([]);
+		expect(publicReferences).toEqual(
 			expect.arrayContaining([
 				expect.stringContaining("@jrkropp/codex-js/client"),
-				expect.stringContaining("@jrkropp/codex-js/react"),
 				expect.stringContaining("@jrkropp/codex-js/server"),
+				expect.stringContaining("@jrkropp/codex-js-react"),
 			]),
 		);
 	});
 
-	it("keeps attribution and local upstream references explicit", () => {
-		const rootReadme = readFileSync(join(repoRoot, "README.md"), "utf8");
-		const packageReadme = readFileSync(join(packageRoot, "README.md"), "utf8");
-		const notice = readFileSync(join(packageRoot, "NOTICE"), "utf8");
-		const parityLedger = readFileSync(
-			join(packageRoot, "CODEX_PARITY_LEDGER.md"),
-			"utf8",
+	it("keeps package source free of mirror and stub scaffolding", () => {
+		const packageSources = [
+			...readSourceFiles(join(corePackageRoot, "src")),
+			...readSourceFiles(join(reactPackageRoot, "src")),
+		];
+		const forbiddenReferences = packageSources.flatMap((file) =>
+			[
+				"codex-rs",
+				"t3code",
+				"stubbed",
+				"not ported yet",
+				"src/upstream",
+				"internal/chat-ui/apps",
+				"apps/web/src",
+			]
+				.filter((reference) => file.contents.includes(reference))
+				.map((reference) => `${file.relativePath}: ${reference}`),
 		);
-		const rootGitignore = readFileSync(join(repoRoot, ".gitignore"), "utf8");
 
-		expect(rootReadme).toContain("unofficial TypeScript port");
-		expect(rootReadme).toContain("not affiliated with");
-		expect(packageReadme).toContain("not affiliated with");
-		expect(notice).toContain("OpenAI Codex");
-		expect(notice).toContain("T3 Tools");
-		expect(parityLedger).toContain("modified TypeScript ports");
-		expect(rootGitignore).toContain("external/*");
-		expect(rootGitignore).toContain("!external/README.md");
+		expect(forbiddenReferences).toEqual([]);
 	});
 
 	it("emits built files for every public export when dist is present", () => {
-		const distRoot = join(packageRoot, "dist");
-		if (!existsSync(distRoot)) {
-			return;
-		}
-		const packageJson = JSON.parse(
-			readFileSync(join(packageRoot, "package.json"), "utf8"),
-		) as {
-			exports: Record<string, string | { import: string; types: string }>;
-		};
-		for (const entry of Object.values(packageJson.exports)) {
-			if (typeof entry === "string") {
-				expect(existsSync(join(packageRoot, entry))).toBe(true);
+		for (const packageRoot of [corePackageRoot, reactPackageRoot]) {
+			const distRoot = join(packageRoot, "dist");
+			if (!existsSync(distRoot)) {
 				continue;
 			}
-			expect(existsSync(join(packageRoot, entry.import))).toBe(true);
-			expect(existsSync(join(packageRoot, entry.types))).toBe(true);
+			const packageJson = readPackageJson(packageRoot);
+			for (const entry of Object.values(packageJson.exports)) {
+				if (typeof entry === "string") {
+					expect(existsSync(join(packageRoot, entry))).toBe(true);
+					continue;
+				}
+				expect(existsSync(join(packageRoot, entry.import))).toBe(true);
+				expect(existsSync(join(packageRoot, entry.types))).toBe(true);
+			}
 		}
 	});
 
-	it("works from a packed tarball in minimal server and Vite React consumers", () => {
-		const distRoot = join(packageRoot, "dist");
-		if (!existsSync(distRoot)) {
+	it("works from packed tarballs in server-only and Vite React consumers", () => {
+		if (
+			!existsSync(join(corePackageRoot, "dist")) ||
+			!existsSync(join(reactPackageRoot, "dist"))
+		) {
 			return;
 		}
 
 		const tempRoot = mkdtempSync(join(tmpdir(), "codex-js-packed-"));
 		try {
-			const packOutput = JSON.parse(
-				execFileSync(
-					"npm",
-					["pack", "--json", "--pack-destination", tempRoot],
-					{ cwd: packageRoot, encoding: "utf8" },
-				),
-			) as Array<{ filename: string }>;
-			const tarballPath = join(tempRoot, packOutput[0]?.filename ?? "");
-			expect(existsSync(tarballPath)).toBe(true);
+			const corePack = packPackage(corePackageRoot, tempRoot);
+			const reactPack = packPackage(reactPackageRoot, tempRoot);
+
+			expectPackFileContract(corePack.files);
+			expectPackFileContract(reactPack.files);
+			expectBuiltCssIsReal();
 
 			const serverConsumer = join(tempRoot, "server-consumer");
-			writeServerConsumer(serverConsumer, tarballPath);
+			writeServerConsumer(serverConsumer, corePack.tarballPath);
 			installConsumer(serverConsumer);
 			runConsumerCommand(serverConsumer, "pnpm", [
 				"exec",
@@ -189,10 +184,22 @@ describe("codex-js package boundary", () => {
 				"tsconfig.json",
 			]);
 			runConsumerCommand(serverConsumer, "node", ["index.mjs"]);
-			expectPackedPackageHasNoSource(serverConsumer);
+			expectPackedPackageHasNoSource(serverConsumer, "@jrkropp/codex-js");
+			expect(existsSync(join(serverConsumer, "node_modules/react"))).toBe(
+				false,
+			);
+			expect(
+				existsSync(
+					join(serverConsumer, "node_modules/@jrkropp/codex-js-react"),
+				),
+			).toBe(false);
 
 			const reactConsumer = join(tempRoot, "react-consumer");
-			writeReactConsumer(reactConsumer, tarballPath);
+			writeReactConsumer(
+				reactConsumer,
+				corePack.tarballPath,
+				reactPack.tarballPath,
+			);
 			installConsumer(reactConsumer);
 			runConsumerCommand(reactConsumer, "pnpm", [
 				"exec",
@@ -201,19 +208,95 @@ describe("codex-js package boundary", () => {
 				"tsconfig.json",
 			]);
 			runConsumerCommand(reactConsumer, "pnpm", ["exec", "vite", "build"]);
-			expectPackedPackageHasNoSource(reactConsumer);
+			expectPackedPackageHasNoSource(reactConsumer, "@jrkropp/codex-js");
+			expectPackedPackageHasNoSource(reactConsumer, "@jrkropp/codex-js-react");
 		} finally {
 			rmSync(tempRoot, { force: true, recursive: true });
 		}
 	}, 120_000);
 });
 
+type PackageJson = {
+	dependencies?: Record<string, string>;
+	exports: Record<string, string | { import: string; types: string }>;
+	files: string[];
+	name: string;
+	peerDependencies?: Record<string, string>;
+	private?: boolean;
+	version: string;
+};
+
+type PackedPackage = {
+	files: Array<{ path: string; size: number }>;
+	tarballPath: string;
+};
+
+function packageFiles(): string[] {
+	return ["dist", "README.md", "CHANGELOG.md", "LICENSE", "NOTICE"];
+}
+
+function readPackageJson(packageRoot: string): PackageJson {
+	return JSON.parse(readFileSync(join(packageRoot, "package.json"), "utf8"));
+}
+
+function packPackage(packageRoot: string, destination: string): PackedPackage {
+	const packOutput = JSON.parse(
+		execFileSync(
+			"pnpm",
+			["pack", "--json", "--pack-destination", destination],
+			{
+				cwd: packageRoot,
+				encoding: "utf8",
+			},
+		),
+	) as
+		| { filename: string; files: Array<{ path: string; size: number }> }
+		| Array<{ filename: string; files: Array<{ path: string; size: number }> }>;
+	const packed = Array.isArray(packOutput) ? packOutput[0] : packOutput;
+	const filename = packed?.filename ?? "";
+	const tarballPath = isAbsolute(filename)
+		? filename
+		: join(destination, filename);
+	expect(existsSync(tarballPath)).toBe(true);
+	return { files: packed?.files ?? [], tarballPath };
+}
+
+function expectPackFileContract(
+	files: Array<{ path: string; size: number }>,
+): void {
+	const paths = files.map((file) => file.path);
+	const forbiddenFragments = [
+		"unstable",
+		"codex-rs",
+		"t3code",
+		"upstream",
+		"stubbed",
+		"not ported yet",
+		"apps/web",
+	];
+	for (const path of paths) {
+		expect(path).not.toMatch(/(^|\/)chunk-[^/]+/);
+		expect(path).not.toMatch(/^dist\/[^/]+-[A-Za-z0-9]{8,}\.d\.[cm]?ts$/);
+		for (const fragment of forbiddenFragments) {
+			expect(path.toLowerCase()).not.toContain(fragment);
+		}
+	}
+}
+
+function expectBuiltCssIsReal(): void {
+	const cssPath = join(reactPackageRoot, "dist/styles.css");
+	const css = readFileSync(cssPath, "utf8");
+	expect(css.length).toBeGreaterThan(1_000);
+	expect(css).toContain("--color-background");
+	expect(css).toContain(".bg-background");
+}
+
 function readSourceFiles(directory: string): Array<{
 	contents: string;
 	relativePath: string;
 }> {
 	return walk(directory)
-		.filter((file) => /\.(ts|tsx)$/.test(file))
+		.filter((file) => /\.(css|ts|tsx)$/.test(file))
 		.map((file) => ({
 			contents: readFileSync(file, "utf8"),
 			relativePath: relative(directory, file),
@@ -225,7 +308,11 @@ function walk(directory: string): string[] {
 		const filePath = join(directory, entry);
 		const stat = statSync(filePath);
 		if (stat.isDirectory()) {
-			if (entry === "node_modules" || entry === ".git" || entry === "external") {
+			if (
+				entry === "node_modules" ||
+				entry === ".git" ||
+				entry === "external"
+			) {
 				return [];
 			}
 			return walk(filePath);
@@ -275,7 +362,7 @@ function toText(value: Buffer | string | undefined): string {
 	return Buffer.isBuffer(value) ? value.toString("utf8") : (value ?? "");
 }
 
-function writeServerConsumer(directory: string, tarballPath: string): void {
+function writeServerConsumer(directory: string, coreTarballPath: string): void {
 	rmSync(directory, { force: true, recursive: true });
 	mkdirSync(directory, { recursive: true });
 	writeFileSync(
@@ -286,7 +373,7 @@ function writeServerConsumer(directory: string, tarballPath: string): void {
 				private: true,
 				type: "module",
 				dependencies: {
-					"@jrkropp/codex-js": `file:${tarballPath}`,
+					"@jrkropp/codex-js": `file:${coreTarballPath}`,
 				},
 				devDependencies: {
 					typescript: "5.8.3",
@@ -316,10 +403,9 @@ function writeServerConsumer(directory: string, tarballPath: string): void {
 	writeFileSync(
 		join(directory, "index.ts"),
 		[
-			'import { InMemoryThreadStore, parseServerTransportPayload, serializeJsonRpcResponse } from "@jrkropp/codex-js/server";',
+			'import { InMemoryThreadStore, serializeJsonRpcResponse } from "@jrkropp/codex-js/server";',
 			'import type { ThreadStore } from "@jrkropp/codex-js/server";',
 			"const store: ThreadStore = new InMemoryThreadStore();",
-			"parseServerTransportPayload('{}');",
 			"serializeJsonRpcResponse(1, { ok: true });",
 			"void store;",
 		].join("\n"),
@@ -335,7 +421,11 @@ function writeServerConsumer(directory: string, tarballPath: string): void {
 	);
 }
 
-function writeReactConsumer(directory: string, tarballPath: string): void {
+function writeReactConsumer(
+	directory: string,
+	coreTarballPath: string,
+	reactTarballPath: string,
+): void {
 	rmSync(directory, { force: true, recursive: true });
 	const srcRoot = join(directory, "src");
 	mkdirSync(srcRoot, { recursive: true });
@@ -347,7 +437,9 @@ function writeReactConsumer(directory: string, tarballPath: string): void {
 				private: true,
 				type: "module",
 				dependencies: {
-					"@jrkropp/codex-js": `file:${tarballPath}`,
+					"@jrkropp/codex-js": `file:${coreTarballPath}`,
+					"@jrkropp/codex-js-react": `file:${reactTarballPath}`,
+					"@vitejs/plugin-react": "^5.1.1",
 					react: "19.2.1",
 					"react-dom": "19.2.1",
 					vite: "^6.4.2",
@@ -356,6 +448,11 @@ function writeReactConsumer(directory: string, tarballPath: string): void {
 					"@types/react": "19.2.7",
 					"@types/react-dom": "19.2.3",
 					typescript: "5.8.3",
+				},
+				pnpm: {
+					overrides: {
+						"@jrkropp/codex-js": `file:${coreTarballPath}`,
+					},
 				},
 			},
 			null,
@@ -390,8 +487,8 @@ function writeReactConsumer(directory: string, tarballPath: string): void {
 		[
 			'import { createRoot } from "react-dom/client";',
 			'import type { CodexAppServer } from "@jrkropp/codex-js/client";',
-			'import { CodexChat } from "@jrkropp/codex-js/react";',
-			'import "@jrkropp/codex-js/styles.css";',
+			'import { CodexChat } from "@jrkropp/codex-js-react";',
+			'import "@jrkropp/codex-js-react/styles.css";',
 			"const appServer: CodexAppServer = {",
 			"  async rejectServerRequest() {},",
 			"  async request() { throw new Error('not connected'); },",
@@ -399,15 +496,21 @@ function writeReactConsumer(directory: string, tarballPath: string): void {
 			"  async resolveServerRequest() {},",
 			"};",
 			"createRoot(document.getElementById('root')!).render(",
-			"  <CodexChat appServer={appServer} connectOnMount={false} threadId=\"00000000-0000-4000-8000-000000000999\" />",
+			'  <CodexChat appServer={appServer} connectOnMount={false} threadId="00000000-0000-4000-8000-000000000999" />',
 			");",
 		].join("\n"),
 	);
 }
 
-function expectPackedPackageHasNoSource(directory: string): void {
-	const installedPackage = join(directory, "node_modules/@jrkropp/codex-js");
+function expectPackedPackageHasNoSource(
+	directory: string,
+	packageName: "@jrkropp/codex-js" | "@jrkropp/codex-js-react",
+): void {
+	const installedPackage = join(directory, "node_modules", packageName);
 	expect(existsSync(join(installedPackage, "src"))).toBe(false);
-	const packageJson = readFileSync(join(installedPackage, "package.json"), "utf8");
+	const packageJson = readFileSync(
+		join(installedPackage, "package.json"),
+		"utf8",
+	);
 	expect(packageJson).not.toContain("./src/");
 }

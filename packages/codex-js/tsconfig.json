@@ -6,18 +6,9 @@
 	"include": [
 		"src/client/**/*.ts",
 		"src/server/**/*.ts",
-		"src/react/**/*.ts",
 		"src/testing/**/*.ts",
 		"src/runtime/**/*.ts",
-		"src/components/**/*.ts",
-		"src/components/**/*.tsx",
-		"src/hooks/**/*.ts",
-		"src/hooks/**/*.tsx",
-		"src/shadcn/**/*.ts",
-		"src/shadcn/**/*.tsx",
-		"src/upstream/codex-rs/**/*.ts",
-		"src/upstream/t3code/**/*.ts",
-		"src/upstream/t3code/**/*.tsx",
+		"src/internal/**/*.ts",
 		"src/index.ts",
 		"tsup.config.ts"
 	]

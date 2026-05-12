@@ -1,0 +1,29 @@
+OpenAI Codex
+Copyright 2025 OpenAI
+
+This project includes code derived from [Ratatui](https://github.com/ratatui/ratatui), licensed under the MIT license.
+Copyright (c) 2016-2022 Florian Dehau
+Copyright (c) 2023-2025 The Ratatui Developers
+
+codex-js
+Copyright 2026 Justin Kropp
+
+This project includes modified TypeScript ports and adaptations of OpenAI Codex.
+OpenAI Codex is licensed under the Apache License, Version 2.0.
+
+This project includes modified UI code derived from T3 Tools / T3 Chat, licensed
+under the MIT License.
+Copyright (c) 2026 T3 Tools Inc.
+
+MIT License text for T3-derived code:
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+Software, and to permit persons to whom the Software is furnished to do so,
+subject to inclusion of the copyright notice and permission notice.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.

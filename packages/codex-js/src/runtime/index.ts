@@ -6,18 +6,19 @@ export type {
 	RolloutItem,
 	SandboxPolicy,
 	Submission,
-} from "../upstream/codex-rs/core/src/protocol";
+} from "../internal/codex/core/src/protocol";
 export type {
+	DynamicToolCallRequest,
 	DynamicToolSpec,
 	DynamicToolSpecWire,
-} from "../upstream/codex-rs/core/src/protocol/dynamic_tools";
-export { BaseInstructions } from "../upstream/codex-rs/core/src/protocol";
+} from "../internal/codex/core/src/protocol/dynamic_tools";
+export { BaseInstructions } from "../internal/codex/core/src/protocol";
 export type {
 	AuthDotJson,
 	ChatgptOAuthTokenExchangeResponse,
 	CodexAuth,
 	ProviderAccountState,
-} from "../upstream/codex-rs/core/src/auth";
+} from "../internal/codex/core/src/auth";
 export {
 	AuthMode,
 	CODEX_CHATGPT_OAUTH_CALLBACK_PATH,
@@ -27,7 +28,7 @@ export {
 	CODEX_CHATGPT_OAUTH_ORIGINATOR,
 	CODEX_CHATGPT_OAUTH_PRIMARY_PORT,
 	CODEX_CHATGPT_OAUTH_SCOPE,
-} from "../upstream/codex-rs/core/src/auth";
+} from "../internal/codex/core/src/auth";
 export {
 	allowsRequestUserInput,
 	applyCollaborationModeMask,
@@ -37,15 +38,15 @@ export {
 	TUI_VISIBLE_COLLABORATION_MODES,
 	type CollaborationMode,
 	type CollaborationModeMask,
-} from "../upstream/codex-rs/core/src/config-types";
+} from "../internal/codex/core/src/config-types";
 export {
 	builtinCollaborationModePresets,
 	builtinCollaborationModePresets as codexBuiltinCollaborationModePresets,
 	collaborationModePresetForMode,
 	defaultModeInstructions,
 	normalizeCollaborationMode,
-} from "../upstream/codex-rs/core/src/collaboration-mode-presets";
-export { CODEX_PLAN_MODE_INSTRUCTIONS } from "../upstream/codex-rs/core/src/plan-mode";
+} from "../internal/codex/core/src/collaboration-mode-presets";
+export { CODEX_PLAN_MODE_INSTRUCTIONS } from "../internal/codex/core/src/plan-mode";
 export type {
 	ClientRequest,
 	CollaborationMode as AppServerCollaborationMode,
@@ -57,7 +58,7 @@ export type {
 	ServerRequest,
 	WebSearchMode,
 	WebSearchToolConfig,
-} from "../upstream/codex-rs/app-server-protocol/schema/typescript";
+} from "../internal/codex/app-server-protocol/schema/typescript";
 export type {
 	CommandExecutionRequestApprovalResponse,
 	CollaborationModeListParams,
@@ -97,8 +98,10 @@ export type {
 	ThreadSetNameResponse,
 	ThreadStartParams,
 	ThreadStartResponse,
+	ThreadTokenUsage,
 	ThreadUnarchiveParams,
 	ThreadUnarchiveResponse,
+	ToolRequestUserInputQuestion,
 	ToolRequestUserInputResponse,
 	Turn,
 	TurnInterruptParams,
@@ -108,33 +111,33 @@ export type {
 	TurnSteerParams,
 	TurnSteerResponse,
 	UserInput,
-} from "../upstream/codex-rs/app-server-protocol/schema/typescript/v2";
+} from "../internal/codex/app-server-protocol/schema/typescript/v2";
 export type {
 	AppServerEvent,
 	AppServerRequestHandle,
 	JSONRPCErrorError,
 	Result,
 	TypedRequestError,
-} from "../upstream/codex-rs/app-server-client/src/lib";
+} from "../internal/codex/app-server-client/src/lib";
 export {
 	clientRequestExperimentalReason,
 	clientRequestId,
 	clientRequestMethod,
 	clientRequestSerializationScope,
 	type ClientRequestSerializationScope,
-} from "../upstream/codex-rs/app-server-protocol/src/protocol";
+} from "../internal/codex/app-server-protocol/src/protocol";
 export {
 	requestMethodName,
 	requestTyped,
 	serverNotificationRequiresDelivery,
-} from "../upstream/codex-rs/app-server-client/src/lib";
+} from "../internal/codex/app-server-client/src/lib";
 export {
 	CodexAppServerClientTransportError,
 	createCodexAppServerClient,
 	parseCodexAppServerEvent,
 	type CodexAppServerClientConnectionStatus,
 	type CodexAppServerClientOptions,
-} from "../upstream/codex-rs/app-server-client/src/remote";
+} from "../internal/codex/app-server-client/src/remote";
 export {
 	jsonRpcInternalError,
 	jsonRpcInvalidRequestError,
@@ -157,7 +160,7 @@ export {
 	type ParsedServerTransportMessage,
 	type ParsedTransportPayload,
 	type TransportEvent,
-} from "../upstream/codex-rs/app-server-transport/src/transport/mod";
+} from "../internal/codex/app-server-transport/src/transport/mod";
 export {
 	OutgoingMessageSender,
 	ThreadScopedOutgoingMessageSender,
@@ -169,8 +172,8 @@ export {
 	type OutgoingResponse,
 	type QueuedOutgoingMessage,
 	type RequestContext,
-} from "../upstream/codex-rs/app-server/src/outgoing_message";
-export { CodexAppServerRequestError } from "../upstream/codex-rs/app-server/src/request_processors/request_errors";
+} from "../internal/codex/app-server/src/outgoing_message";
+export { CodexAppServerRequestError } from "../internal/codex/app-server/src/request_processors/request_errors";
 export {
 	codexAppServerDeferredResponse,
 	CodexAppServerConnectionSessionState,
@@ -181,22 +184,22 @@ export {
 	type CodexAppServerConnectionRequestOutcome,
 	type CodexAppServerMessageProcessorOptions,
 	type InitializedConnectionSessionState,
-} from "../upstream/codex-rs/app-server/src/message_processor";
+} from "../internal/codex/app-server/src/message_processor";
 export {
 	ConnectionRpcGate,
 	ConnectionRpcGateClosedError,
-} from "../upstream/codex-rs/app-server/src/connection_rpc_gate";
+} from "../internal/codex/app-server/src/connection_rpc_gate";
 export {
 	RequestSerializationQueues,
 	requestSerializationQueueKeyFromScope,
 	type RequestSerializationQueueKey,
-} from "../upstream/codex-rs/app-server/src/request_serialization";
+} from "../internal/codex/app-server/src/request_serialization";
 export {
 	McpRequestProcessor,
 	ThreadRequestProcessor,
 	TurnRequestProcessor,
 	type RuntimeSession,
-} from "../upstream/codex-rs/app-server/src/request_processors";
+} from "../internal/codex/app-server/src/request_processors";
 export {
 	createCodexAppServerRuntime,
 	type CodexAppServerEventSink,
@@ -204,8 +207,8 @@ export {
 	type CodexAppServerRuntime,
 	type CodexAppServerRuntimeContext,
 	type CodexAppServerRuntimeOptions,
-} from "../upstream/codex-rs/app-server/src/runtime";
-export { AppServerSession, type CodexAppServer } from "../upstream/codex-rs/app-server-client/src/session";
+} from "../internal/codex/app-server/src/runtime";
+export { AppServerSession, type CodexAppServer } from "../internal/codex/app-server-client/src/session";
 export {
 	serverNotificationThreadTarget,
 	serverRequestThreadId,
@@ -215,33 +218,34 @@ export {
 	type ThreadBufferedEvent,
 	type ThreadEventSnapshot,
 	type ThreadTokenUsageSnapshot,
-} from "../upstream/codex-rs/app-server-client/src/thread_event_store";
+} from "../internal/codex/app-server-client/src/thread_event_store";
 export {
 	PendingAppServerRequests,
 	type AppServerRequestResolution,
 	type ResolvedAppServerRequest,
 	type UnsupportedAppServerRequest,
-} from "../upstream/codex-rs/app-server-client/src/pending_requests";
-export { deniedRequestPermissionsResponse } from "../upstream/codex-rs/core/src/request_permissions";
-export type { Event } from "../upstream/codex-rs/core/src/session/session";
+} from "../internal/codex/app-server-client/src/pending_requests";
+export { deniedRequestPermissionsResponse } from "../internal/codex/core/src/request_permissions";
+export type { RequestPermissionsEvent } from "../internal/codex/core/src/request_permissions";
+export type { Event } from "../internal/codex/core/src/session/session";
 export {
 	applyEventMsgToRenderedThread,
 	createRenderedThreadState,
 	renderThreadFromHistory,
 	setRenderedThreadConnectionStatus,
-} from "../upstream/codex-rs/core/src/rendered-thread";
+} from "../internal/codex/core/src/rendered-thread";
 export type {
 	RenderedThreadConnectionStatus,
 	RenderedThreadState,
-} from "../upstream/codex-rs/core/src/rendered-thread";
-export { LiveThread } from "../upstream/codex-rs/core/src/thread-store/live-thread";
-export type { ThreadStore } from "../upstream/codex-rs/core/src/thread-store/store";
+} from "../internal/codex/core/src/rendered-thread";
+export { LiveThread } from "../internal/codex/core/src/thread-store/live-thread";
+export type { ThreadStore } from "../internal/codex/core/src/thread-store/store";
 export {
 	InMemoryThreadStore,
 	type InMemoryThreadStoreCalls,
 	LocalThreadStore,
 	type LocalThreadStoreConfig,
-} from "../upstream/codex-rs/thread-store/src";
+} from "../internal/codex/thread-store/src";
 export type {
 	AppendThreadItemsParams,
 	ArchiveThreadParams,
@@ -257,16 +261,30 @@ export type {
 	ThreadPage,
 	ThreadPersistenceMetadata,
 	UpdateThreadMetadataParams,
-} from "../upstream/codex-rs/core/src/thread-store/types";
-export { ThreadHistoryBuilder } from "../upstream/codex-rs/core/src/thread-history-builder";
-export type { Model, ModelPreset } from "../upstream/codex-rs/core/src/model-provider";
+} from "../internal/codex/core/src/thread-store/types";
+export { ThreadHistoryBuilder } from "../internal/codex/core/src/thread-history-builder";
+export type {
+	Turn as ThreadHistoryTurn,
+	TurnStatus as ThreadHistoryTurnStatus,
+} from "../internal/codex/core/src/thread-history-builder";
+export type {
+	TextElement as CoreTextElement,
+	UserInput as CoreUserInputItem,
+} from "../internal/codex/core/src/protocol/user_input";
+export type {
+	TurnItem as CoreTurnItem,
+	UserMessageTurnItem as CoreUserMessageTurnItem,
+} from "../internal/codex/core/src/items";
+export type { Model, ModelPreset } from "../internal/codex/core/src/model-provider";
 export {
 	createModelClient,
+	defaultModelsManager,
 	ModelClientSession,
 	ResponsesClient,
 	ResponsesWebsocketClient,
 	ResponsesWebsocketConnection,
-} from "../upstream/codex-rs/core/src";
+	resolveReasoningEffortForModel,
+} from "../internal/codex/core/src";
 export type {
 	CreateModelClientInput,
 	ModelClient,
@@ -279,8 +297,8 @@ export type {
 	ResponseCreateWsRequest,
 	ResponseProcessedWsRequest,
 	ResponsesWsRequest,
-} from "../upstream/codex-rs/core/src";
-export { ThreadMemoryMode } from "../upstream/codex-rs/core/src/memory";
+} from "../internal/codex/core/src";
+export { ThreadMemoryMode } from "../internal/codex/core/src/memory";
 export {
 	CodexMcpConnectionManagerAdapter,
 	EmptyMcpConnectionManager,
@@ -293,11 +311,12 @@ export {
 	type McpServerStatus,
 	type McpServerStatusListOptions,
 	type McpToolInfo,
-} from "../upstream/codex-rs/core/src/mcp";
+} from "../internal/codex/core/src/mcp";
 export {
 	SortDirection,
 	ThreadEventPersistenceMode,
 	ThreadSortKey,
-} from "../upstream/codex-rs/core/src/thread-store/types";
-export { asThreadId } from "../upstream/codex-rs/core/src/ids";
-export type { ThreadId } from "../upstream/codex-rs/core/src/ids";
+} from "../internal/codex/core/src/thread-store/types";
+export { thread_token_usage_updated_notification_from_rollout_items } from "../internal/codex/app-server/src/request_processors/token_usage_replay";
+export { asThreadId } from "../internal/codex/core/src/ids";
+export type { ThreadId } from "../internal/codex/core/src/ids";

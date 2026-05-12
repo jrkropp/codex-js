@@ -50,7 +50,9 @@ function syncReference({ name, source, target, validate, expectation }) {
 		fail(`Missing ${name} source: ${resolvedSource}`);
 	}
 	if (!validate(resolvedSource)) {
-		fail(`Invalid ${name} source: expected ${expectation}, got ${resolvedSource}`);
+		fail(
+			`Invalid ${name} source: expected ${expectation}, got ${resolvedSource}`,
+		);
 	}
 
 	if (existsSync(target)) {
@@ -113,7 +115,9 @@ function normalizePath(input) {
 }
 
 function relativeToRepo(path) {
-	return path.startsWith(`${repoRoot}/`) ? path.slice(repoRoot.length + 1) : path;
+	return path.startsWith(`${repoRoot}/`)
+		? path.slice(repoRoot.length + 1)
+		: path;
 }
 
 function displayPath(path) {
