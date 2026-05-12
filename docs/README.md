@@ -9,18 +9,27 @@ Exploratory proposals live in [Staging](./staging/README.md) until their termino
 ## Package Source
 
 ```text
-src/
-  upstream/
-    codex-rs/
-    t3code/
+packages/
+  codex-js/
+    src/client/
+    src/server/
+    src/testing/
+    src/internal/
+    src/generated/
 
-  runtime/
-  components/
-  hooks/
-  testing/
+  codex-js-react/
+    src/components/
+    src/hooks/
+    src/shadcn/
+    src/styles.css
+
+external/
+  codex/
+  t3code/
 ```
 
-The source structure is accepted in [ADR 0001](./design/decisions/0001-package-source-structure.md).
+Publishable source lives in `packages/*/src`. Source reference material lives in
+`external/` or `docs/internal/` and is not part of the npm package surface.
 
 ## Documentation Areas
 

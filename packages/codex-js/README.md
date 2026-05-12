@@ -1,35 +1,123 @@
 # @jrkropp/codex-js
 
-Core TypeScript runtime, browser client, server adapters, and test utilities for building Codex-backed apps.
+Core TypeScript SDK for building Codex-backed applications. It includes the browser app-server client, platform-neutral server helpers, Codex-aligned runtime contracts, stores, model transport, and test utilities.
 
 ## Install
 
 ```sh
-pnpm add @jrkropp/codex-js
+npm install @jrkropp/codex-js
 ```
 
 Requirements:
 
 - Node.js 20 or newer.
-- ESM projects only. This package does not ship CommonJS.
-- React is not a dependency of this package. Install `@jrkropp/codex-js-react` only when you need the packaged UI.
+- ESM only. CommonJS output is not shipped.
+- React is not a dependency. Install `@jrkropp/codex-js-react` only when you need packaged UI components.
 
-## Stable Imports
+## Public Imports
 
 ```ts
 import { createCodexAppServerClient } from "@jrkropp/codex-js/client";
-import { createCodexAppServerRuntime } from "@jrkropp/codex-js/server";
+import { createCodexAppServer } from "@jrkropp/codex-js/server";
 import { InMemoryThreadStore } from "@jrkropp/codex-js/testing";
 ```
 
-The published core package exposes only:
+The core package exposes only:
 
 - `@jrkropp/codex-js`
 - `@jrkropp/codex-js/client`
 - `@jrkropp/codex-js/server`
 - `@jrkropp/codex-js/testing`
 
-There are no public upstream mirror or unstable import paths.
+There are no public mirror or unstable imports.
+
+## Server Quick Start
+
+```ts
+import {
+	createCodexAppServer,
+	createModelClient,
+	defineDynamicTool,
+	dynamicToolResponse,
+} from "@jrkropp/codex-js/server";
+import { InMemoryThreadStore } from "@jrkropp/codex-js/testing";
+
+const lookupStatus = defineDynamicTool({
+	name: "lookup_status",
+	description: "Look up the current deployment status.",
+	inputSchema: {
+		type: "object",
+		properties: { name: { type: "string" } },
+		required: ["name"],
+		additionalProperties: false,
+	},
+	async execute(args) {
+		return dynamicToolResponse.text(`${args.name} is healthy.`);
+	},
+});
+
+const appServer = createCodexAppServer({
+	threadStore: new InMemoryThreadStore(),
+	dynamicTools: [lookupStatus],
+	defaults: {
+		cwd: "/workspace",
+		model: "gpt-5-mini",
+		modelProvider: "openai",
+	},
+	createModelClient({ session, threadId }) {
+		return createModelClient({
+			apiKey: process.env.OPENAI_API_KEY!,
+			installationId: "my-app",
+			sessionId: session.id,
+			threadId,
+		});
+	},
+});
+```
+
+Create one app-server connection per WebSocket:
+
+```ts
+const connection = appServer.createConnection({
+	send(message) {
+		webSocket.send(message);
+	},
+});
+
+webSocket.addEventListener("message", (event) => {
+	void connection.accept(event.data);
+});
+
+webSocket.addEventListener("close", () => {
+	void connection.close();
+});
+```
+
+`createCodexAppServerRuntime` is still exported for advanced hosts that need to own message processing directly, but most applications should start with `createCodexAppServer`.
+
+## Dynamic Tools
+
+Use `defineDynamicTool` for server-executed tools. Use a namespace when a tool is deferred and loaded through Codex tool search.
+
+```ts
+const lookupInvoice = defineDynamicTool({
+	namespace: "billing",
+	name: "lookup_invoice",
+	description: "Look up an invoice by id.",
+	deferLoading: true,
+	inputSchema: {
+		type: "object",
+		properties: { invoiceId: { type: "string" } },
+		required: ["invoiceId"],
+		additionalProperties: false,
+	},
+	async execute(args) {
+		return dynamicToolResponse.text(`Invoice ${args.invoiceId} is paid.`);
+	},
+});
+```
+
+Tools with `execute` are resolved by the server. Tools without `execute` are surfaced as app-server requests so the client can resolve them.
 
 ## Browser Client
 
@@ -37,63 +125,24 @@ There are no public upstream mirror or unstable import paths.
 import { createCodexAppServerClient } from "@jrkropp/codex-js/client";
 
 const appServer = createCodexAppServerClient({
-	url: () => "ws://localhost:1466/api/codex/app-server",
-});
-
-await appServer.requestTyped("thread/start", {
-	threadId: "00000000-0000-4000-8000-000000000001",
-});
-```
-
-## Server Runtime
-
-```ts
-import {
-	CodexAppServerMessageProcessor,
-	createCodexAppServerRuntime,
-} from "@jrkropp/codex-js/server";
-import { InMemoryThreadStore } from "@jrkropp/codex-js/testing";
-
-const runtime = createCodexAppServerRuntime({
-	threadStore: new InMemoryThreadStore(),
-});
-
-const processor = new CodexAppServerMessageProcessor({
-	runtime,
-	send: (message) => {
-		// Write the serialized app-server event to your WebSocket.
-		console.log(message);
+	url: async () => {
+		const session = await fetch("/api/codex/session", { method: "POST" });
+		const { webSocketUrl } = await session.json();
+		return webSocketUrl;
 	},
 });
 ```
 
-Create one message processor per WebSocket connection. The package does not own your HTTP server, credential handling, persistence backend, or product-specific tools.
+The browser never needs an OpenAI API key. Host applications should issue a short-lived app-server WebSocket URL from their backend.
 
-## React UI
+## Cloudflare
 
-The UI package is separate:
-
-```sh
-pnpm add @jrkropp/codex-js @jrkropp/codex-js-react react react-dom
-```
-
-```tsx
-import { CodexChat } from "@jrkropp/codex-js-react";
-import "@jrkropp/codex-js-react/styles.css";
-```
-
-## Examples
-
-From the repository root:
+The repository includes a deployable Cloudflare Worker + Durable Object + Vite React example:
 
 ```sh
-pnpm dev:minimal
-pnpm dev:vite-react
+pnpm dev:node-local
 pnpm dev:cloudflare-example
+pnpm --filter @jrkropp/codex-js-cloudflare-example deploy:dry-run
 ```
 
-The examples use local source aliases during development and packed-package tests verify the npm tarballs.
-
-## Architecture
-
-`@jrkropp/codex-js` is the non-React package. It owns the transport protocol, app-server client, server runtime helpers, stores, serializers, and testing primitives. UI components, shadcn exports, Tailwind output, and React-only dependencies live in `@jrkropp/codex-js-react`.
+Use `examples/node-local` for the smallest local Node/Vite integration. Use `examples/cloudflare` for a deployable Worker + Durable Object integration with one-time WebSocket tickets, Durable Object SQLite storage, hibernating WebSockets, server-executed dynamic tools, and a deferred namespaced tool.

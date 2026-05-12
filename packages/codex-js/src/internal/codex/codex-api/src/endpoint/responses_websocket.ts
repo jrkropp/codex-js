@@ -6,10 +6,7 @@ import type {
 	TurnState,
 } from "../common";
 import { ApiError } from "../error";
-import {
-	providerWebsocketHeaders,
-	websocketUrlForPath,
-} from "../provider";
+import { providerWebsocketHeaders, websocketUrlForPath } from "../provider";
 import { serializeResponsesWsRequest } from "../requests/responses";
 import { responseEventsFromSseTextChunks } from "../sse/responses";
 
@@ -22,10 +19,13 @@ const WEBSOCKET_CONNECTION_LIMIT_REACHED_CODE =
 const WEBSOCKET_CONNECTION_LIMIT_REACHED_MESSAGE =
 	"Responses websocket connection limit reached (60 minutes). Create a new websocket connection to continue.";
 
-type FetchLike = (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+type FetchLike = (
+	input: RequestInfo | URL,
+	init?: RequestInit,
+) => Promise<Response>;
 type WorkerWebSocket = WebSocket & {
 	accept?: (options?: unknown) => void;
-	binaryType?: BinaryType;
+	binaryType?: "arraybuffer" | "blob";
 };
 type WebSocketUpgradeResponse = Response & {
 	webSocket?: WorkerWebSocket | null;
@@ -64,9 +64,7 @@ export class WsStream {
 	}
 
 	is_closed(): boolean {
-		const closedState =
-			typeof WebSocket !== "undefined" ? WebSocket.CLOSED : this.socket.CLOSED;
-		return this.closed || this.socket.readyState === (closedState ?? 3);
+		return this.closed || this.socket.readyState === 3;
 	}
 
 	send(message: string): void {
@@ -85,7 +83,9 @@ export class WsStream {
 		}
 	}
 
-	async next(timeoutMs?: number | null): Promise<MessageEvent | CloseEvent | ErrorEvent> {
+	async next(
+		timeoutMs?: number | null,
+	): Promise<MessageEvent | CloseEvent | ErrorEvent> {
 		const queued = this.queued.shift();
 		if (queued) {
 			return queued;
@@ -97,13 +97,16 @@ export class WsStream {
 		let timeout: ReturnType<typeof setTimeout> | null = null;
 		try {
 			return await Promise.race([
-				new Promise<MessageEvent | CloseEvent | ErrorEvent>((resolve, reject) => {
-					this.waiters.push({ resolve, reject });
-				}),
+				new Promise<MessageEvent | CloseEvent | ErrorEvent>(
+					(resolve, reject) => {
+						this.waiters.push({ resolve, reject });
+					},
+				),
 				new Promise<MessageEvent | CloseEvent | ErrorEvent>((_, reject) => {
 					if (timeoutMs && timeoutMs > 0) {
 						timeout = setTimeout(
-							() => reject(ApiError.stream("idle timeout waiting for websocket")),
+							() =>
+								reject(ApiError.stream("idle timeout waiting for websocket")),
 							timeoutMs,
 						);
 					}
@@ -161,7 +164,7 @@ export class ResponsesWebsocketConnection {
 		const connection = this;
 		const stream = new WebsocketResponseStream(async function* () {
 			yield* connection.initialEvents();
-				yield* await connection.withExclusiveStream(async function* () {
+			yield* await connection.withExclusiveStream(async function* () {
 				sendWebsocketRequest(
 					connection.input.stream,
 					request,
@@ -321,7 +324,9 @@ class WebsocketResponseStream implements ResponseStream {
 	}
 }
 
-async function apiErrorFromWebsocketHandshake(response: Response): Promise<ApiError> {
+async function apiErrorFromWebsocketHandshake(
+	response: Response,
+): Promise<ApiError> {
 	const body = await response.text().catch(() => "");
 	return ApiError.api(
 		response.status,
@@ -364,19 +369,18 @@ function mapWrappedWebsocketErrorEvent(payload: string): ApiError | null {
 	if (typeof event.status === "number" && event.status >= 400) {
 		return ApiError.api(
 			event.status,
-			event.error?.message || `OpenAI Responses websocket error ${event.status}.`,
+			event.error?.message ||
+				`OpenAI Responses websocket error ${event.status}.`,
 		);
 	}
 	return null;
 }
 
-function parseWrappedWebsocketErrorEvent(payload: string):
-	| {
-			type?: unknown;
-			status?: number;
-			error?: { code?: string | null; message?: string | null };
-	  }
-	| null {
+function parseWrappedWebsocketErrorEvent(payload: string): {
+	type?: unknown;
+	status?: number;
+	error?: { code?: string | null; message?: string | null };
+} | null {
 	try {
 		const parsed = JSON.parse(payload);
 		if (!isRecord(parsed) || parsed.type !== "error") {
@@ -412,7 +416,11 @@ function closeLikeEvent(): CloseEvent {
 			reason: "websocket closed",
 		});
 	}
-	return { type: "close", code: 1006, reason: "websocket closed" } as CloseEvent;
+	return {
+		type: "close",
+		code: 1006,
+		reason: "websocket closed",
+	} as CloseEvent;
 }
 
 function isCloseEvent(
@@ -429,8 +437,6 @@ function isErrorEvent(
 
 function isAsyncIterable<T>(value: unknown): value is AsyncIterable<T> {
 	return (
-		typeof value === "object" &&
-		value !== null &&
-		Symbol.asyncIterator in value
+		typeof value === "object" && value !== null && Symbol.asyncIterator in value
 	);
 }

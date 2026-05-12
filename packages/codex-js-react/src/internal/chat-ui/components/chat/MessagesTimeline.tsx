@@ -24,11 +24,7 @@ import {
 } from "react";
 
 import { Button } from "../ui/button";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { cn } from "../../lib/utils";
 import type {
 	CoreTurnItem as TurnItem,
@@ -72,7 +68,10 @@ type TimelineRowContextValue = {
 
 const TimelineRowContext = createContext<TimelineRowContextValue | null>(null);
 
-type MessageTimelineRowModel = Extract<MessagesTimelineRow, { kind: "message" }>;
+type MessageTimelineRowModel = Extract<
+	MessagesTimelineRow,
+	{ kind: "message" }
+>;
 type UserMessageTimelineRowModel = MessageTimelineRowModel & {
 	item: Extract<TurnItem, { type: "UserMessage" }>;
 };
@@ -105,7 +104,7 @@ export const MessagesTimeline = memo(function MessagesTimeline({
 				warnings,
 				errors,
 				runtimeError,
-		}),
+			}),
 		[
 			activeTurnStartedAt,
 			errors,
@@ -195,7 +194,6 @@ function useStableRows(rows: MessagesTimelineRow[]): MessagesTimelineRow[] {
 		result: [],
 	});
 
-	/* eslint-disable react-hooks/refs */
 	return useMemo(() => {
 		// This mirrors T3's structural-sharing hook; the ref is a render cache
 		// for stable virtualized row identity, not UI state.
@@ -206,7 +204,6 @@ function useStableRows(rows: MessagesTimelineRow[]): MessagesTimelineRow[] {
 		previousState.current = nextState;
 		return nextState.result;
 	}, [rows]);
-	/* eslint-enable react-hooks/refs */
 }
 
 const TimelineRowContent = memo(function TimelineRowContent({
@@ -234,7 +231,9 @@ const TimelineRowContent = memo(function TimelineRowContent({
 			) : null}
 			{row.kind === "work" ? <WorkTimelineRow row={row} /> : null}
 			{row.kind === "working" ? <WorkingTimelineRow row={row} /> : null}
-			{row.kind === "warning" ? <WarningTimelineRow message={row.message} /> : null}
+			{row.kind === "warning" ? (
+				<WarningTimelineRow message={row.message} />
+			) : null}
 			{row.kind === "error" ? <ErrorTimelineRow message={row.message} /> : null}
 		</div>
 	);
@@ -248,22 +247,14 @@ function useTimelineRowContext() {
 	return context;
 }
 
-function MessageTimelineRow({
-	row,
-}: {
-	row: MessageTimelineRowModel;
-}) {
+function MessageTimelineRow({ row }: { row: MessageTimelineRowModel }) {
 	if (row.item.type === "UserMessage") {
 		return <UserTimelineRow row={row as UserMessageTimelineRowModel} />;
 	}
 	return <AssistantTimelineRow row={row as AssistantMessageTimelineRowModel} />;
 }
 
-function UserTimelineRow({
-	row,
-}: {
-	row: UserMessageTimelineRowModel;
-}) {
+function UserTimelineRow({ row }: { row: UserMessageTimelineRowModel }) {
 	const copyText = userInputTextForCopy(row.item.content);
 	return (
 		<div className="flex justify-end">
@@ -304,7 +295,10 @@ function AssistantTimelineRow({
 			{row.showCompletionDivider ? (
 				<AssistantCompletionDivider row={row} />
 			) : null}
-			<ChatMarkdown text={messageText} isStreaming={row.item.phase === "streaming"} />
+			<ChatMarkdown
+				text={messageText}
+				isStreaming={row.item.phase === "streaming"}
+			/>
 			<AssistantChangedFilesSection
 				files={row.changedFiles}
 				turnId={row.turnId}
@@ -384,7 +378,9 @@ function WorkTimelineRow({
 		expanded,
 	});
 	const hasOverflow = row.groupedEntries.length > visible.entries.length;
-	const onlyToolEntries = row.groupedEntries.every((entry) => entry.tone === "tool");
+	const onlyToolEntries = row.groupedEntries.every(
+		(entry) => entry.tone === "tool",
+	);
 	const showHeader = hasOverflow || !onlyToolEntries;
 	const groupLabel = onlyToolEntries ? "Tool calls" : "Work log";
 
@@ -735,7 +731,9 @@ function WorkingTimer({ createdAt }: { createdAt: string }) {
 		return () => window.clearInterval(intervalId);
 	}, [createdAt]);
 
-	return <>{formatWorkingTimer(createdAt, new Date(nowMs).toISOString()) ?? "0s"}</>;
+	return (
+		<>{formatWorkingTimer(createdAt, new Date(nowMs).toISOString()) ?? "0s"}</>
+	);
 }
 
 function formatWorkingTimer(startIso: string, endIso: string): string | null {
@@ -745,7 +743,10 @@ function formatWorkingTimer(startIso: string, endIso: string): string | null {
 		return null;
 	}
 
-	const elapsedSeconds = Math.max(0, Math.floor((endedAtMs - startedAtMs) / 1000));
+	const elapsedSeconds = Math.max(
+		0,
+		Math.floor((endedAtMs - startedAtMs) / 1000),
+	);
 	if (elapsedSeconds < 60) {
 		return `${elapsedSeconds}s`;
 	}

@@ -8,6 +8,9 @@ external/*
 *.tsbuildinfo
 coverage/
 *.tgz
+.wrangler/
 .env
 .env.*
 !.env.example
+.dev.vars
+.dev.vars.*

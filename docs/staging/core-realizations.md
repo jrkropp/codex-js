@@ -112,7 +112,7 @@ The model should stay Codex-shaped, not host application-shaped. host applicatio
 
 Friendly `sendMessage` APIs belong at the component edge. Runtime dispatch is Codex-shaped app-server lifecycle flow.
 
-Codex App Server is maintained by processor boundaries: thread requests, turn requests, thread state, outgoing messages, and bespoke event handling.
+Codex App Server is maintained by processor boundaries: thread requests, turn requests, thread state, outgoing messages, and app-server event mapping.
 
 Session creation is a runtime boundary: it attaches ThreadStore history, LiveThread persistence, SessionConfiguration, and app-owned overrides before processors run turns.
 

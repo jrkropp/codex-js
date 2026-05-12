@@ -26,7 +26,10 @@ Core `EventMsg` values are runtime and storage internals. App-server implementat
 
 React chat state reduces generated app-server protocol events into `ThreadEventStore`. Hooks and components render `ThreadEventSnapshot` state derived from generated `Thread`, `Turn`, `ThreadItem`, `ServerNotification`, and `ServerRequest` values. Core events remain below the app-server boundary.
 
-Protocol state belongs in `src/runtime`; T3 projection belongs at the component boundary. The runtime reducer does not import T3 timeline types. Components create `CodexChatRenderState` from protocol snapshots and lifecycle UI state before rendering the T3-derived timeline, composer, banners, and pending-request slots.
+Protocol state belongs in the core package runtime internals. React projection
+belongs in `@jrkropp/codex-js-react`. Components create
+`CodexChatRenderState` from protocol snapshots and lifecycle UI state before
+rendering the timeline, composer, banners, and pending-request slots.
 
 The package model uses Codex-shaped terms:
 
@@ -57,10 +60,11 @@ Product grouping, account boundaries, workspace selection, and deployment placem
 
 The package layers remain explicit:
 
-- `src/upstream/codex-rs` is the faithful Codex runtime upstream source.
-- `src/runtime` contains platform-neutral lifecycle contracts around Codex concepts.
-- `src/components` contains the stable T3-derived React component surface.
-- `src/hooks` contains React hooks around a configured runtime.
+- `packages/codex-js/src/client` contains browser app-server client helpers.
+- `packages/codex-js/src/server` contains platform-neutral app-server helpers.
+- `packages/codex-js/src/internal` contains implemented Codex ports and internals.
+- `packages/codex-js-react/src/components` contains the stable React component surface.
+- `packages/codex-js-react/src/hooks` contains React hooks around a configured app-server client.
 - The consuming app owns storage, routing, auth, tools, prompts, product renderers, and deployment.
 
 The app server runs Codex. The store remembers Codex. The UI renders Codex as generated app-server snapshots and live events.

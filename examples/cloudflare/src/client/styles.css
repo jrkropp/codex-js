@@ -1,0 +1,56 @@
+@import "@fontsource-variable/geist";
+@import "@jrkropp/codex-js-react/styles.css";
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@source "./";
+
+:root {
+	font-family: "Geist Variable", system-ui, sans-serif;
+}
+
+body {
+	min-height: 100vh;
+	margin: 0;
+	background: var(--color-background);
+	color: var(--color-foreground);
+}
+
+#root {
+	min-height: 100vh;
+}
+
+.codex-shell {
+	min-height: 100vh;
+	display: grid;
+	grid-template-rows: auto 1fr;
+}
+
+.codex-shell__bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	border-bottom: 1px solid var(--color-border);
+	padding: 0.75rem 1rem;
+}
+
+.codex-shell__title {
+	margin: 0;
+	font-size: 0.95rem;
+	font-weight: 650;
+}
+
+.codex-shell__status {
+	color: var(--color-muted-foreground);
+	font-size: 0.8rem;
+}
+
+.codex-shell__loading {
+	display: grid;
+	min-height: 100vh;
+	place-items: center;
+	color: var(--color-muted-foreground);
+	font-size: 0.9rem;
+}

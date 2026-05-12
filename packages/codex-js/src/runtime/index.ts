@@ -181,8 +181,10 @@ export {
 	type CodexAppServerMethodHandlers,
 	type CodexAppServerRequestContext,
 	type CodexAppServerDeferredResponse,
+	type CodexAppServerConnectionSnapshot,
 	type CodexAppServerConnectionRequestOutcome,
 	type CodexAppServerMessageProcessorOptions,
+	type InitializedConnectionSessionSnapshot,
 	type InitializedConnectionSessionState,
 } from "../internal/codex/app-server/src/message_processor";
 export {
@@ -208,7 +210,10 @@ export {
 	type CodexAppServerRuntimeContext,
 	type CodexAppServerRuntimeOptions,
 } from "../internal/codex/app-server/src/runtime";
-export { AppServerSession, type CodexAppServer } from "../internal/codex/app-server-client/src/session";
+export {
+	AppServerSession,
+	type CodexAppServer,
+} from "../internal/codex/app-server-client/src/session";
 export {
 	serverNotificationThreadTarget,
 	serverRequestThreadId,
@@ -275,7 +280,10 @@ export type {
 	TurnItem as CoreTurnItem,
 	UserMessageTurnItem as CoreUserMessageTurnItem,
 } from "../internal/codex/core/src/items";
-export type { Model, ModelPreset } from "../internal/codex/core/src/model-provider";
+export type {
+	Model,
+	ModelPreset,
+} from "../internal/codex/core/src/model-provider";
 export {
 	createModelClient,
 	defaultModelsManager,

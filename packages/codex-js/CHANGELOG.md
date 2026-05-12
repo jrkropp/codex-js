@@ -1,5 +1,16 @@
 # @jrkropp/codex-js
 
+## 0.3.0
+
+### Minor Changes
+
+- Add high-level app-server helpers, dynamic tool definition helpers, connection
+  snapshot support, and pending server-request persistence contracts.
+- Align public server terminology around app-server, connection, thread, turn,
+  dynamic tool, server request, server notification, and transport concepts.
+- Replace the placeholder Cloudflare example with a deployable Worker + Durable
+  Object + Vite React example.
+
 ## 0.2.0
 
 ### Minor Changes

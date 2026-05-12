@@ -8,11 +8,11 @@ This documentation describes the intended production design of `@jrkropp/codex-j
 
 - Establish durable primitives before implementation details.
 - Keep the public model small, standard, and composable.
-- Treat `src/upstream/codex-rs` as a Codex-shaped upstream source and `src/upstream/t3code` as a T3-shaped upstream source. Codex and T3 are proven source references; follow their folder structure, naming, concepts, classes, contracts, and lifecycle patterns as closely as practical.
-- Keep package-owned abstractions outside the upstream trees.
+- Treat `external/codex` as the Codex terminology and lifecycle source of truth.
+- Keep publishable package code semantic and boring: `client`, `server`, `testing`, `internal`, `generated`, `components`, `hooks`, and `shadcn`.
 - `ThreadStore` is the storage boundary. Product grouping, account boundaries, workspace selection, and deployment placement are not package primitives.
 - Runtime delivery follows Codex's server names: `OutgoingMessageSender`, `ThreadScopedOutgoingMessageSender`, `ThreadState`, and `ThreadStateManager`.
-- Examples use the public doorways: `CodexChat`, `createCodexAppServerClient`, `CodexAppServerMessageProcessor`, `createCodexAppServerRuntime`, `ThreadStore`, `createModelClient`, and `sendOutgoingMessage`.
+- Examples use the public doorways: `CodexChat`, `createCodexAppServerClient`, `createCodexAppServer`, `ThreadStore`, `createModelClient`, and dynamic tool helpers.
 - When behavior is wrong or unclear, compare against Codex or T3 first. If local code differs, realign it with the source reference instead of inventing a custom fix.
 - Prefer precise names over broad abstractions.
 - Separate accepted docs from staged thinking.
@@ -20,10 +20,8 @@ This documentation describes the intended production design of `@jrkropp/codex-j
 
 ## Source References
 
-- Codex source reference: `/Users/justinkropp/Github/host-app/external/codex`
-- T3 source reference: `/Users/justinkropp/Github/host-app/external/t3code`
-- Package Codex upstream source: `/Users/justinkropp/Github/host-app/packages/codex-js/src/upstream/codex-rs`
-- Package T3 upstream source: `/Users/justinkropp/Github/host-app/packages/codex-js/src/upstream/t3code`
+- Codex source reference: `/Users/justinkropp/Github/codex-js/external/codex`
+- T3 source reference: `/Users/justinkropp/Github/codex-js/external/t3code`
 
 The `external/` directories are read-only. Do not import from them, edit them, or treat them as package source.
 
@@ -38,12 +36,14 @@ The `external/` directories are read-only. Do not import from them, edit them, o
 
 ## Folder Structure
 
-- `src/upstream/codex-rs/`: Codex-shaped upstream source tree.
-- `src/upstream/t3code/`: T3-shaped upstream source tree.
-- `src/runtime/`: platform-neutral Codex lifecycle code and contracts.
-- `src/components/`: stable public React component surface.
-- `src/hooks/`: stable public React hooks.
-- `src/testing/`: package and consumer testing utilities.
+- `packages/codex-js/src/client/`: browser app-server client facade.
+- `packages/codex-js/src/server/`: platform-neutral app-server helpers.
+- `packages/codex-js/src/testing/`: package and consumer testing utilities.
+- `packages/codex-js/src/internal/`: implemented Codex ports and package internals.
+- `packages/codex-js/src/generated/`: generated protocol surfaces.
+- `packages/codex-js-react/src/components/`: stable public React component surface.
+- `packages/codex-js-react/src/hooks/`: stable public React hooks.
+- `packages/codex-js-react/src/shadcn/`: shadcn-compatible primitives.
 - `start-here/`: short onboarding path for the package model, philosophy, and primitives.
 - `architecture/`: accepted architecture notes and deeper system explanations.
 - `design/decisions/`: accepted ADR-style decisions.
