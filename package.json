@@ -12,7 +12,7 @@
 		"dev:minimal": "pnpm --filter @jrkropp/codex-js-minimal-app-server-example dev",
 		"dev:vite-react": "pnpm --filter @jrkropp/codex-js-vite-react-example dev",
 		"external:sync": "node scripts/sync-external.mjs",
-		"format:check": "prettier --check README.md package.json .changeset/*.md packages/*/package.json packages/*/README.md packages/*/tsconfig*.json packages/*/tsup.config.ts examples/*/package.json examples/*/tsconfig.json examples/*/vite.config.ts examples/codex-js-vite-aliases.ts scripts/*.mjs tests/**/*.ts",
+		"format:check": "prettier --check README.md package.json .changeset packages/*/package.json packages/*/README.md packages/*/tsconfig*.json packages/*/tsup.config.ts examples/*/package.json examples/*/tsconfig.json examples/*/vite.config.ts examples/codex-js-vite-aliases.ts scripts/*.mjs tests/**/*.ts",
 		"lint": "pnpm format:check && pnpm typecheck",
 		"pack:dry-run": "pnpm --filter @jrkropp/codex-js --filter @jrkropp/codex-js-react pack:dry-run",
 		"publint": "pnpm --filter @jrkropp/codex-js --filter @jrkropp/codex-js-react publint",
