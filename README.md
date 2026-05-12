@@ -79,6 +79,12 @@ pnpm changeset
 Merging the Changesets release PR updates `CHANGELOG.md`, bumps package
 versions, publishes to npm, and creates the GitHub release.
 
+Releases use npm trusted publishing. Existing package names can publish through
+OIDC from `.github/workflows/release.yml`; brand-new package names must be
+bootstrapped once with an npm token or a manual first publish before trusted
+publishing can be configured for them. Run `pnpm release:preflight` to catch
+that state before a release can partially publish.
+
 ## License And Attribution
 
 `codex-js` is licensed under Apache-2.0. Portions are modified TypeScript ports

@@ -17,6 +17,7 @@
 		"pack:dry-run": "pnpm --filter @jrkropp/codex-js --filter @jrkropp/codex-js-react pack:dry-run",
 		"publint": "pnpm --filter @jrkropp/codex-js --filter @jrkropp/codex-js-react publint",
 		"release": "pnpm check && changeset publish",
+		"release:preflight": "node scripts/check-release-publish-config.mjs",
 		"test": "vitest run --exclude tests/package.test.ts --passWithNoTests",
 		"test:pack": "vitest run tests/package.test.ts",
 		"type-package": "pnpm --filter @jrkropp/codex-js typecheck && pnpm --filter @jrkropp/codex-js-react typecheck",
