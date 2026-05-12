@@ -46,6 +46,12 @@ jobs:
             echo "enabled=false" >> "$GITHUB_OUTPUT"
             echo "Skipping npm publish. Configure NPM_TOKEN or set the NPM_TRUSTED_PUBLISHING repository variable to true after npm trusted publishing is enabled."
           fi
+      - name: Check npm package bootstrap state
+        if: steps.npm-publishing.outputs.enabled == 'true'
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TRUSTED_PUBLISHING: ${{ vars.NPM_TRUSTED_PUBLISHING }}
+        run: pnpm release:preflight
       - uses: changesets/action@v1
         if: steps.npm-publishing.outputs.enabled == 'true'
         with:
