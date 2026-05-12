@@ -1,5 +1,11 @@
 # @jrkropp/codex-js-react
 
+## 0.2.1
+
+### Patch Changes
+
+- [#6](https://github.com/jrkropp/codex-js/pull/6) [`cddb1ce`](https://github.com/jrkropp/codex-js/commit/cddb1ce1f0c021b8ff79a08a6ce9bb8ae69048d7) Thanks [@jrkropp](https://github.com/jrkropp)! - Replace the package's internal workspace dependency with a publishable semver range so npm consumers can install the React package from the registry.
+
 ## 0.2.0
 
 ### Minor Changes
