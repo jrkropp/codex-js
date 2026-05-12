@@ -13,7 +13,7 @@ CodexChat
 Run it with:
 
 ```bash
-npm --prefix packages/codex-js/examples/minimal-app-server run dev
+pnpm dev:minimal
 ```
 
 The app prompts for an OpenAI API key and stores it in `sessionStorage` for the
@@ -33,7 +33,7 @@ The example also includes app-owned dynamic tools:
   can include `<proposed_plan>` blocks, which render as T3 proposed-plan cards
   and can be sent back as `PLEASE IMPLEMENT THIS PLAN:` follow-ups.
 
-The example intentionally avoids product-specific host code, Cloudflare, Durable Objects, React
-Router, upstream T3 imports, upstream Codex imports, and package-internal paths.
-Codex behavior enters through `/runtime`; UI rendering enters through
-`/components`.
+The example intentionally avoids product-specific host code, Cloudflare,
+Durable Objects, React Router, unstable T3 imports, unstable Codex imports, and
+package-internal paths. Codex behavior enters through the stable `/server`
+surface; UI rendering enters through the stable `/react` surface.

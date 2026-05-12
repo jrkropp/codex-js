@@ -39,69 +39,69 @@
 			"types": "./dist/testing/index.d.ts",
 			"import": "./dist/testing/index.js"
 		},
-		"./codex-rs/config": {
-			"types": "./dist/codex-rs/config/index.d.ts",
-			"import": "./dist/codex-rs/config/index.js"
+		"./unstable/codex-rs/config": {
+			"types": "./dist/unstable/codex-rs/config/index.d.ts",
+			"import": "./dist/unstable/codex-rs/config/index.js"
 		},
-		"./codex-rs/parity": {
-			"types": "./dist/codex-rs/parity.d.ts",
-			"import": "./dist/codex-rs/parity.js"
+		"./unstable/codex-rs/parity": {
+			"types": "./dist/unstable/codex-rs/parity.d.ts",
+			"import": "./dist/unstable/codex-rs/parity.js"
 		},
-		"./codex-rs/unsupported": {
-			"types": "./dist/codex-rs/unsupported.d.ts",
-			"import": "./dist/codex-rs/unsupported.js"
+		"./unstable/codex-rs/unsupported": {
+			"types": "./dist/unstable/codex-rs/unsupported.d.ts",
+			"import": "./dist/unstable/codex-rs/unsupported.js"
 		},
-		"./codex-rs/core": {
-			"types": "./dist/codex-rs/core/index.d.ts",
-			"import": "./dist/codex-rs/core/index.js"
+		"./unstable/codex-rs/core": {
+			"types": "./dist/unstable/codex-rs/core/index.d.ts",
+			"import": "./dist/unstable/codex-rs/core/index.js"
 		},
-		"./codex-rs/core/config": {
-			"types": "./dist/codex-rs/core/config/index.d.ts",
-			"import": "./dist/codex-rs/core/config/index.js"
+		"./unstable/codex-rs/core/config": {
+			"types": "./dist/unstable/codex-rs/core/config/index.d.ts",
+			"import": "./dist/unstable/codex-rs/core/config/index.js"
 		},
-		"./codex-rs/thread-store": {
-			"types": "./dist/codex-rs/thread-store/index.d.ts",
-			"import": "./dist/codex-rs/thread-store/index.js"
+		"./unstable/codex-rs/thread-store": {
+			"types": "./dist/unstable/codex-rs/thread-store/index.d.ts",
+			"import": "./dist/unstable/codex-rs/thread-store/index.js"
 		},
-		"./codex-rs/codex-api": {
-			"types": "./dist/codex-rs/codex-api/index.d.ts",
-			"import": "./dist/codex-rs/codex-api/index.js"
+		"./unstable/codex-rs/codex-api": {
+			"types": "./dist/unstable/codex-rs/codex-api/index.d.ts",
+			"import": "./dist/unstable/codex-rs/codex-api/index.js"
 		},
-		"./codex-rs/app-server": {
-			"types": "./dist/codex-rs/app-server/index.d.ts",
-			"import": "./dist/codex-rs/app-server/index.js"
+		"./unstable/codex-rs/app-server": {
+			"types": "./dist/unstable/codex-rs/app-server/index.d.ts",
+			"import": "./dist/unstable/codex-rs/app-server/index.js"
 		},
-		"./codex-rs/app-server-protocol": {
-			"types": "./dist/codex-rs/app-server-protocol/index.d.ts",
-			"import": "./dist/codex-rs/app-server-protocol/index.js"
+		"./unstable/codex-rs/app-server-protocol": {
+			"types": "./dist/unstable/codex-rs/app-server-protocol/index.d.ts",
+			"import": "./dist/unstable/codex-rs/app-server-protocol/index.js"
 		},
-		"./codex-rs/app-server-protocol/protocol": {
-			"types": "./dist/codex-rs/app-server-protocol/protocol.d.ts",
-			"import": "./dist/codex-rs/app-server-protocol/protocol.js"
+		"./unstable/codex-rs/app-server-protocol/protocol": {
+			"types": "./dist/unstable/codex-rs/app-server-protocol/protocol.d.ts",
+			"import": "./dist/unstable/codex-rs/app-server-protocol/protocol.js"
 		},
-		"./codex-rs/model-provider": {
-			"types": "./dist/codex-rs/model-provider/index.d.ts",
-			"import": "./dist/codex-rs/model-provider/index.js"
+		"./unstable/codex-rs/model-provider": {
+			"types": "./dist/unstable/codex-rs/model-provider/index.d.ts",
+			"import": "./dist/unstable/codex-rs/model-provider/index.js"
 		},
-		"./codex-rs/models-manager": {
-			"types": "./dist/codex-rs/models-manager/index.d.ts",
-			"import": "./dist/codex-rs/models-manager/index.js"
+		"./unstable/codex-rs/models-manager": {
+			"types": "./dist/unstable/codex-rs/models-manager/index.d.ts",
+			"import": "./dist/unstable/codex-rs/models-manager/index.js"
 		},
-		"./codex-rs/utils/output-truncation": {
-			"types": "./dist/codex-rs/utils/output-truncation.d.ts",
-			"import": "./dist/codex-rs/utils/output-truncation.js"
+		"./unstable/codex-rs/utils/output-truncation": {
+			"types": "./dist/unstable/codex-rs/utils/output-truncation.d.ts",
+			"import": "./dist/unstable/codex-rs/utils/output-truncation.js"
 		},
-		"./codex-rs/utils/string": {
-			"types": "./dist/codex-rs/utils/string.d.ts",
-			"import": "./dist/codex-rs/utils/string.js"
+		"./unstable/codex-rs/utils/string": {
+			"types": "./dist/unstable/codex-rs/utils/string.d.ts",
+			"import": "./dist/unstable/codex-rs/utils/string.js"
 		},
-		"./t3code/apps/web": {
-			"types": "./dist/t3code/apps/web/index.d.ts",
-			"import": "./dist/t3code/apps/web/index.js"
+		"./unstable/t3code/apps/web": {
+			"types": "./dist/unstable/t3code/apps/web/index.d.ts",
+			"import": "./dist/unstable/t3code/apps/web/index.js"
 		},
-		"./t3code/apps/web/components/chat": {
-			"types": "./dist/t3code/apps/web/components/chat.d.ts",
-			"import": "./dist/t3code/apps/web/components/chat.js"
+		"./unstable/t3code/apps/web/components/chat": {
+			"types": "./dist/unstable/t3code/apps/web/components/chat.d.ts",
+			"import": "./dist/unstable/t3code/apps/web/components/chat.js"
 		},
 		"./styles.css": "./dist/styles.css"
 	},
@@ -131,6 +131,14 @@
 	"peerDependencies": {
 		"react": "^18.3.0 || ^19.0.0",
 		"react-dom": "^18.3.0 || ^19.0.0"
+	},
+	"peerDependenciesMeta": {
+		"react": {
+			"optional": true
+		},
+		"react-dom": {
+			"optional": true
+		}
 	},
 	"devDependencies": {
 		"@types/react": "19.2.7",

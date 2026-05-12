@@ -8,6 +8,11 @@ Codex owns runtime truth, T3 owns interaction quality, and the consuming app own
 product meaning. The package exists to preserve that boundary while providing
 stable runtime, component, hook, store, and app-server contracts.
 
+Published stable surfaces are limited to the package root plus `/client`,
+`/server`, `/react`, `/shadcn`, `/testing`, and `/styles.css`. Upstream mirror
+exports are intentionally available only through `/unstable/codex-rs/*` and
+`/unstable/t3code/*`; do not document or rely on old stable mirror paths.
+
 Read these files before changing package code:
 
 - `README.md` describes package usage and integration modes.
@@ -20,8 +25,8 @@ Read these files before changing package code:
 
 | Segment | Owner | Rule |
 | --- | --- | --- |
-| `src/upstream/codex-rs` | Package | Follow `.reference/codex/codex-rs` structure and naming. |
-| `src/upstream/t3code` | Package | Follow `.reference/t3code` structure and UI boundaries. |
+| `src/upstream/codex-rs` | Package | Follow `external/codex/codex-rs` structure and naming. |
+| `src/upstream/t3code` | Package | Follow `external/t3code` structure and UI boundaries. |
 | `src/runtime` | Package | Define Codex lifecycle contracts, configured runtime, store boundary, app-server boundary, and route-neutral thread state. |
 | `src/components` | Package | Define stable public React components built from the T3 upstream source. |
 | `src/shadcn` | Package | Define package-owned standard shadcn primitives for optional layout composition. |

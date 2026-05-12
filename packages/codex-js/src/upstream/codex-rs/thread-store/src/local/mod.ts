@@ -190,7 +190,7 @@ type NodeFsPromises = {
 
 async function nodeFsPromises(): Promise<NodeFsPromises> {
 	const moduleName = "node:fs/promises";
-	return import(moduleName) as Promise<NodeFsPromises>;
+	return import(/* @vite-ignore */ moduleName) as Promise<NodeFsPromises>;
 }
 
 function dirname(path: string): string {

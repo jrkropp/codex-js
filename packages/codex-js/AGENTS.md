@@ -6,9 +6,9 @@ practical.
 
 ## Upstream Mirror Rules
 
-- Treat `.reference/codex/codex-rs` as the canonical architecture source for
+- Treat `external/codex/codex-rs` as the canonical architecture source for
   `src/upstream/codex-rs`.
-- Treat `.reference/t3code` as the canonical UI source for `src/upstream/t3code`.
+- Treat `external/t3code` as the canonical UI source for `src/upstream/t3code`.
 - Preserve upstream naming, file stems, folder structure, terminology, protocol
   names, lifecycle boundaries, and runtime concepts whenever TypeScript allows.
 - When Rust file names use snake_case, prefer the same file stem in TypeScript
