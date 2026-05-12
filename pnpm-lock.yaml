@@ -166,7 +166,7 @@ importers:
   packages/codex-js-react:
     dependencies:
       '@jrkropp/codex-js':
-        specifier: workspace:^
+        specifier: ^0.2.0
         version: link:../codex-js
       '@legendapp/list':
         specifier: ^3.0.0-beta.44

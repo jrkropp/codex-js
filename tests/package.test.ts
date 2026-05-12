@@ -75,6 +75,7 @@ describe("npm package boundaries", () => {
 		for (const packageJson of [corePackageJson, reactPackageJson]) {
 			const metadata = JSON.stringify(packageJson);
 			expect(metadata).not.toContain("./src/");
+			expect(metadata).not.toContain("workspace:");
 			expect(metadata).not.toContain("unstable");
 			expect(metadata).not.toContain("codex-rs");
 			expect(metadata).not.toContain("t3code");
