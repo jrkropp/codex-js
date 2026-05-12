@@ -1,6 +1,6 @@
 {
 	"name": "@jrkropp/codex-js",
-	"version": "0.1.4",
+	"version": "0.2.0",
 	"description": "Unofficial TypeScript Codex runtime for building Codex-backed web apps.",
 	"license": "Apache-2.0",
 	"type": "module",
